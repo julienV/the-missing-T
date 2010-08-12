@@ -16,13 +16,13 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport( 'joomla.application.component.view');
 
 /**
- * View class for the Missingt Yyyy list
+ * View class for the Missingt Files list
  *
  * @package Joomla
  * @subpackage Missingt
  * @since 0.1
  */
-class MissingtViewYyyys extends JView {
+class MissingtViewFiles extends JView {
 
 	function display($tpl = null)
 	{
@@ -41,33 +41,36 @@ class MissingtViewYyyys extends JView {
 		$document->addStyleSheet('components/com_missingt/assets/css/missingt.css');
 		
 		//build toolbar
-		JToolBarHelper::title( JText::_( 'Missingt - Yyyys' ), 'yyyys' );
-    JToolBarHelper::addNewX();
-    JToolBarHelper::editListX();
-    JToolBarHelper::deleteList();
-		JToolBarHelper::help( 'missingt.yyyys', true );
+		JToolBarHelper::title( JText::_( 'Missingt - Files' ), 'files' );
+    JToolBarHelper::custom('translate', 'forward.png', 'forward.png', 'COM_MISSINGT_FILES_TOOLBAR_TRANSLATE', true, true);
+		JToolBarHelper::help( 'missingt.files', true );
 		
 		MissingtAdminHelper::buildMenu();
     
-    $document->setTitle(JText::_('Missingt - Yyyys'));
+    $document->setTitle(JText::_('Missingt - Files'));
         
-    $filter_state   = $mainframe->getUserStateFromRequest( $option.$this->getName().'.filter_state',    'filter_state',   '',       'word' );
-    $filter_order   = $mainframe->getUserStateFromRequest( $option.$this->getName().'.filter_order',    'filter_order',   'o.name', 'cmd' );
+    $filter_order   = $mainframe->getUserStateFromRequest( $option.$this->getName().'.filter_order',    'filter_order',   'name', 'cmd' );
     $filter_order_Dir = $mainframe->getUserStateFromRequest( $option.$this->getName().'.filter_order_Dir',  'filter_order_Dir', '',       'word' );
-    $search       = $mainframe->getUserStateFromRequest( $option.$this->getName().'.search', 'search', '', 'string' );
+    $search         = $mainframe->getUserStateFromRequest( $option.$this->getName().'.search', 'search', '', 'string' );
+    $from = JRequest::getVar('from', 'en-GB', 'request', 'string');
+    $to   = JRequest::getVar('to', '', 'request', 'string');
     
-    $rows = & $this->get('Data');
+    $rows   = & $this->get('Data');
+    $languages_src = & $this->get('Languages');
     $total    = & $this->get( 'Total' );
     $pagination = & $this->get( 'Pagination' );
     
-    // state filter
-    $stateopt = array();
-    $stateopt[] = JHTML::_('select.option', '', JText::_('- Select State -'));
-    $stateopt[] = JHTML::_('select.option', 'P', JText::_('Published'));
-    $stateopt[] = JHTML::_('select.option', 'A', JText::_('Archived'));
-    $stateopt[] = JHTML::_('select.option', 'U', JText::_('Unpublished'));
-    $lists['state'] = JHTML::_('select.genericlist', $stateopt, 'filter_state', 'class="inputbox" onchange="submitform( );" size="1"', 'value', 'text', $filter_state );
-
+    // lists
+    $lists = array();
+    
+    // source languages
+    $options = array();
+    foreach($languages_src as $src) {
+    	$options[] = JHTML::_('select.option', $src, $src);
+    }    
+    $lists['from'] = JHTML::_('select.genericlist', $options, 'from', 'id="lg_from"', 'value', 'text', $from);
+    $lists['to']   = JHTML::_('select.genericlist', $options, 'to', 'id="lg_to"', 'value', 'text', $to);
+    
     // table ordering
     $lists['order_Dir'] = $filter_order_Dir;
     $lists['order'] = $filter_order;

@@ -22,8 +22,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
           <td>
             <div id="cpanel">
             <?php
-            $link = 'index.php?option=com_missingt&view=yyyy';
-            $this->quickiconButton( $link, 'user.png', JText::_( 'Users' ) );            
+            $link = 'index.php?option=com_missingt&view=files';
+            $this->quickiconButton( $link, 'query.png', JText::_( 'Users' ) );            
             ?>
             </div>
           </td>

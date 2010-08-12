@@ -25,6 +25,7 @@ if (!$user->authorize( 'com_tracks', 'manage' )) {
 
 // Require the base controller
 require_once (JPATH_COMPONENT.DS.'controller.php');
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'helper.php');
 
 // Require specific controller if requested
 if($controller = JRequest::getWord('controller')) {
