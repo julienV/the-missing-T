@@ -16,13 +16,13 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport( 'joomla.application.component.view');
 
 /**
- * View class for the yyyy edit screen
+ * View class for the file edit screen
  *
  * @package Joomla
  * @subpackage Missingt
  * @since 0.1
  */
-class MissingtViewYyyy extends JView {
+class MissingtViewFile extends JView {
 
 	function display($tpl = null)
 	{		
@@ -31,34 +31,20 @@ class MissingtViewYyyy extends JView {
     //initialise variables
     $document = & JFactory::getDocument();
     $user     = & JFactory::getUser();
-    $editor   = & JFactory::getEditor();
 
 		//add css and submenu to document
 		$document->addStyleSheet('components/com_missingt/assets/css/missingt.css');
 
     //get vars
     $cid  = JRequest::getVar( 'cid', array(0), 'post', 'array' );
-    $cid = $cid[0];
+    $cid  = $cid[0];
+    $to   = JRequest::getVar('to', '', 'post', 'string');
     
     $model = & $this->getModel();
-    $row        = & $this->get( 'Data');
-    
-    // fail if checked out not by 'me'
-    if ($row->id) {
-      if ($model->isCheckedOut( $user->get('id') )) {
-        JError::raiseWarning( 'SOME_ERROR_CODE', $row->name.' '.JText::_( 'EDITED BY ANOTHER ADMIN' ));
-        $mainframe->redirect( 'index.php?option=com_missingt&controller=yyyy' );
-      }
-    }
-    
+    $data  = & $this->get( 'Data');
+            
     //create the toolbar
-    if ( $cid ) {
-      JToolBarHelper::title( JText::_( 'EDIT YYYY' ), 'yyyyedit' );
-      //makes data safe
-      JFilterOutput::objectHTMLSafe( $row, ENT_QUOTES, 'description' );
-    } else {
-      JToolBarHelper::title( JText::_( 'ADD YYYY' ), 'yyyyedit' );
-    }
+    JToolBarHelper::title( JText::_( 'COM_MISSINGT_TRANSLATE_FILE_TITLE' ), 'translate' );
     JToolBarHelper::apply();
     JToolBarHelper::spacer();
     JToolBarHelper::save();
@@ -68,8 +54,9 @@ class MissingtViewYyyy extends JView {
     //JToolBarHelper::help( 'screen.webcast', true );
     
     //assign data to template
-    $this->assignRef('row'        , $row);
-    $this->assignRef('editor'       , $editor);
+    $this->assignRef('data',  $data);
+    $this->assign('file', $cid[0]);
+    $this->assign('to',   $to);
     
     parent::display($tpl);
 	}

@@ -121,6 +121,7 @@ class MissingtControllerFiles extends JController
 		$cid = $cid[0];
 		 
 		JRequest::setVar( 'view', 'file');
+		JRequest::setVar( 'layout', 'form');
 		parent::display();
 	}
 }
