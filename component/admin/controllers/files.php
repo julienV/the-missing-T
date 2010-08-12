@@ -32,7 +32,7 @@ class MissingtControllerFiles extends JController
 		// Register Extra tasks
 		$this->registerTask( 'add',  'display' );
 		$this->registerTask( 'edit', 'display' );
-		$this->registerTask( 'apply', 'save' );
+		$this->registerTask( 'apply', 'save' );		
 	}
   
   
@@ -70,29 +70,34 @@ class MissingtControllerFiles extends JController
 	
   function save()
 	{
-		$post	= JRequest::get('post');
-		$cid	= JRequest::getVar( 'cid', array(0), 'post', 'array' );
-		$post['id'] = (int) $cid[0];
-    $post['description'] = JRequest::getVar('description', '', 'post', 'string', JREQUEST_ALLOWRAW);
-
+		$cid = JRequest::getVar( 'cid', array(), 'post', 'array' );
+		$cid = $cid[0];
+		$post	= JRequest::get('post', JREQUEST_ALLOWRAW);
+		
 		$model = $this->getModel('file');
 
-		if ($returnid = $model->store($post)) {
-			$msg = JText::_( 'Yyyy Saved' );
+		if ($model->store($post)) {
+			$msg = JText::_( 'COM_MISSINGT_FILE_SAVED_SUCCESS' );
 		} else {
-			$msg = JText::_( 'Error Saving file' ).$model->getError();
+			$msg = JText::_( 'COM_MISSINGT_FILE_SAVED_FAILURE' ).$model->getError();
 		}
-
-		// Check the table in so it can be edited.... we are done with it anyway
-		$model->checkin();
 		
-		if ( !$returnid || $this->getTask() == 'save' ) {
+		if ( $this->getTask() == 'save' ) {
 			$link = 'index.php?option=com_missingt&view=files';
 		}
 		else {
-			$link = 'index.php?option=com_missingt&controller=file&task=edit&cid[]='.$returnid;
+			$link = 'index.php?option=com_missingt&controller=files&task=translate&cid[]='.$cid;
 		}
 		$this->setRedirect($link, $msg);
+	}
+	
+  function export()
+	{		
+		JRequest::setVar('view', 'file');
+		JRequest::setVar('layout', 'export');
+		JRequest::setVar('format', 'raw');
+		JRequest::setVar('tmpl', 'component');
+		parent::display();
 	}
 
 	function remove()

@@ -27,7 +27,7 @@ class MissingtViewFile extends JView {
 	function display($tpl = null)
 	{		
     global $mainframe;
-    
+        
     //initialise variables
     $document = & JFactory::getDocument();
     $user     = & JFactory::getUser();
@@ -42,12 +42,13 @@ class MissingtViewFile extends JView {
     
     $model = & $this->getModel();
     $data  = & $this->get( 'Data');
+    $target = $this->get( 'Target');
             
     //create the toolbar
     JToolBarHelper::title( JText::_( 'COM_MISSINGT_TRANSLATE_FILE_TITLE' ), 'translate' );
     JToolBarHelper::apply();
-    JToolBarHelper::spacer();
     JToolBarHelper::save();
+    JToolBarHelper::custom('export', 'upload.png', 'upload.png', 'COM_MISSINGT_TRANSLATE_FILE_TOOLBAR_EXPORT', false);
     JToolBarHelper::spacer();
     JToolBarHelper::cancel();
     JToolBarHelper::spacer();
@@ -55,7 +56,7 @@ class MissingtViewFile extends JView {
     
     //assign data to template
     $this->assignRef('data',  $data);
-    $this->assign('file', $cid[0]);
+    $this->assign('file', $cid);
     $this->assign('to',   $to);
     
     parent::display($tpl);

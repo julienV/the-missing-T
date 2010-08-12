@@ -48,17 +48,19 @@ class MissingtViewFiles extends JView {
 		MissingtAdminHelper::buildMenu();
     
     $document->setTitle(JText::_('Missingt - Files'));
-        
-    $filter_order   = $mainframe->getUserStateFromRequest( $option.$this->getName().'.filter_order',    'filter_order',   'name', 'cmd' );
-    $filter_order_Dir = $mainframe->getUserStateFromRequest( $option.$this->getName().'.filter_order_Dir',  'filter_order_Dir', '',       'word' );
-    $search         = $mainframe->getUserStateFromRequest( $option.$this->getName().'.search', 'search', '', 'string' );
-    $from = JRequest::getVar('from', 'en-GB', 'request', 'string');
-    $to   = JRequest::getVar('to', '', 'request', 'string');
     
     $rows   = & $this->get('Data');
     $languages_src = & $this->get('Languages');
     $total    = & $this->get( 'Total' );
     $pagination = & $this->get( 'Pagination' );
+    
+        
+    $filter_order     = $mainframe->getUserState( $option.'.files.filter_order',    'filter_order',   'name', 'cmd' );
+    $filter_order_Dir = $mainframe->getUserState( $option.'.files.filter_order_Dir',  'filter_order_Dir', '',       'word' );
+    $search           = $mainframe->getUserState( $option.'.files.search', 'search', '', 'string' );
+    $from = $mainframe->getUserState( $option.'.files.from', 'en-GB', 'request', 'string');
+    $to   = $mainframe->getUserState( $option.'.files.to', '', 'request', 'string');
+    
     
     // lists
     $lists = array();

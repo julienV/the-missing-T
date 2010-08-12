@@ -64,8 +64,11 @@ class MissingtModelFiles extends JModel
 
 		global $mainframe, $option;
 
-    $limit      = $mainframe->getUserStateFromRequest( $option.'.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-    $limitstart = $mainframe->getUserStateFromRequest( $option.JRequest::getCmd( 'view').'.limitstart', 'limitstart', 0, 'int' );
+    $limit      = $mainframe->getUserStateFromRequest( $option.'.files.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+    $limitstart = $mainframe->getUserStateFromRequest( $option.'.files.limitstart', 'limitstart', 0, 'int' );
+    $search     = $mainframe->getUserStateFromRequest( $option.'.files.search', 'search', '', 'string');
+    $from       = $mainframe->getUserStateFromRequest( $option.'.files.from', 'from', 'en-GB', 'string' );
+    $to         = $mainframe->getUserStateFromRequest( $option.'.files.to', 'to', '', 'string');
 		
 		$this->setState('limit', $limit);
 		$this->setState('limitstart', $limitstart);
@@ -117,10 +120,12 @@ class MissingtModelFiles extends JModel
 
 	function _getFiles()
 	{	
+		global $option;
+		$app = &JFactory::getApplication();
 		if (empty($this->_data))
 		{
-			$search = JRequest::getVar('search', '', 'request', 'string');
-			$from   = JRequest::getVar('from', 'en-GB', 'request', 'string');
+			$search = $app->getUserState($option.'.files.search');
+			$from   = $app->getUserState($option.'.files.from');
 			$files = JFolder::files(JPATH_SITE.DS.'language'.DS.$from, $search, false, true);
 			sort($files);
 			$this->_data = $files;

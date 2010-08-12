@@ -49,7 +49,7 @@ class MissingtModelFile extends JModel
   {
     parent::__construct();
 
-    $array = JRequest::getVar('cid',  0, '', 'array');
+    $array = JRequest::getVar('cid', '', '', 'array');
     $this->setId($array[0]);
   }
 
@@ -84,11 +84,7 @@ class MissingtModelFile extends JModel
 			$res->from = get_object_vars($object);
 			
 			// target file
-			$to = JRequest::getVar('to', '', 'request', 'string');
-			$filename = basename($this->_id);
-			$pospoint = strpos($filename, '.');
-			$target = $to.substr($filename, $pospoint);
-			$path = dirname(dirname($this->_id)).DS.$to.DS.$target;
+			$path = $this->getTarget();
 			if (file_exists($path))
 			{
 				$object = $helper->stringToObject(file_get_contents($path));
@@ -112,40 +108,66 @@ class MissingtModelFile extends JModel
    */
   function store($data)
   {
+  	jimport('joomla.filesystem.file');
+  	
     $user   = & JFactory::getUser();
     $config   = & JFactory::getConfig();
 
-    $row  =& $this->getTable('file', 'MissingtTable');
-
-    // bind it to the table
-    if (!$row->bind($data)) {
-      JError::raiseError(500, $this->_db->getErrorMsg() );
-      return false;
+    $target = $this->getTarget();
+    
+    $text = $this->_convertToIni($data);
+    
+    if (file_exists($target) && !is_writable($target)) {
+			$this->setError('COM_MISSINGT_ERROR_WRITING_FILE_NOT_WRITABLE');
+			return false;    	
     }
-
-    // sanitise id field
-    $row->id = (int) $row->id;
-
-    $nullDate = $this->_db->getNullDate();
-
-    //update item order
-    if (!$row->id) {
-      $row->ordering = $row->getNextOrder();
-    }
-
-    // Make sure the data is valid
-    if (!$row->check()) {
-      $this->setError($row->getError());
-      return false;
-    }
-
-    // Store it in the db
-    if (!$row->store()) {
-      JError::raiseError(500, $this->_db->getErrorMsg() );
-      return false;
-    }
-
-    return $row->id;
+		$ret = file_put_contents($target, $text);
+		
+		if (!$ret) {
+			$this->setError('COM_MISSINGT_ERROR_WRITING_FILE');
+			return false;
+		}
+    return true;
   }
+  
+  function getResult()
+  {
+		$post	= JRequest::get('post', JREQUEST_ALLOWRAW);		    
+    $text = $this->_convertToIni($post);
+    return $text;
+  }
+  
+  /**
+   * builds path to target file
+   * 
+   * @return string path
+   */
+  function getTarget()
+  {
+		$to = JRequest::getVar('to', '', 'request', 'string');
+		$filename = basename($this->_id);
+		$pospoint = strpos($filename, '.');
+		$target = $to.substr($filename, $pospoint);
+		$path = dirname(dirname($this->_id)).DS.$to.DS.$target;
+		return $path;  	
+  }
+  
+	function _convertToIni($array)
+	{	
+		$handlerIni = & JRegistryFormat::getInstance('INI');
+		$object = new StdClass;
+		
+		foreach($array as $k=>$v) 
+		{
+			if (strpos($k, 'KEY_') === 0) {
+				$key = substr($k, 4);
+				$object->$key = $v;
+			}
+		}
+		
+		$string = $handlerIni->objectToString($object,null);	
+		
+		return $string;
+	}
 }
 ?>
