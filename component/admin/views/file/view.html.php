@@ -26,7 +26,11 @@ class MissingtViewFile extends JView {
 
 	function display($tpl = null)
 	{		
-    global $mainframe;
+		global $option;
+		
+		$app = &JFactory::getApplication();
+		$location = $app->getUserState($option.'.files.location');
+		$to       = $app->getUserState($option.'.files.to');
         
     //initialise variables
     $document = & JFactory::getDocument();
@@ -36,9 +40,8 @@ class MissingtViewFile extends JView {
 		$document->addStyleSheet('components/com_missingt/assets/css/missingt.css');
 
     //get vars
-    $cid  = JRequest::getVar( 'cid', array(0), 'post', 'array' );
-    $cid  = $cid[0];
-    $to   = JRequest::getVar('to', '', 'post', 'string');
+    $cid      = JRequest::getVar( 'cid', array(0), 'post', 'array' );
+    $cid      = $cid[0];
     
     $model    = & $this->getModel();
     $data     = & $this->get( 'Data');
@@ -63,6 +66,7 @@ class MissingtViewFile extends JView {
     $this->assign('to',         $to);
     $this->assign('writable',   $writable);
     $this->assign('target',     $target);
+    $this->assign('location',   $location);
     
     parent::display($tpl);
 	}

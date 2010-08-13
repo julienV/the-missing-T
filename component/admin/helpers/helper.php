@@ -7,7 +7,7 @@
 
 class MissingtAdminHelper {
 
- function buildMenu()
+  function buildMenu()
   {
     $user = & JFactory::getUser();
     
@@ -18,5 +18,18 @@ class MissingtAdminHelper {
     JSubMenuHelper::addEntry( JText::_( 'HOME' ), 'index.php?option=com_missingt', ($view == ''));
 //    JSubMenuHelper::addEntry( JText::_( 'YYYY' ), 'index.php?option=com_missingt&view=yyyy', ($view == 'yyyy'));
   }
+  
+  function getRealPOST() 
+  {
+    $pairs = explode("&", file_get_contents("php://input"));
+    $vars = array();
+    foreach ($pairs as $pair) {
+        $nv = explode("=", $pair);
+        $name = urldecode($nv[0]);
+        $value = urldecode($nv[1]);
+        $vars[$name] = $value;
+    }
+    return $vars;
+	}  
 }
 ?>

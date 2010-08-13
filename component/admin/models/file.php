@@ -79,8 +79,9 @@ class MissingtModelFile extends JModel
     {
     	$res = new stdclass();
     	// original file
+    	$source = $this->getSource();
     	$helper = & JRegistryFormat::getInstance('INI');
-			$object = $helper->stringToObject(file_get_contents($this->_id));
+			$object = $helper->stringToObject(file_get_contents($source));
 			$res->from = get_object_vars($object);
 			
 			// target file
@@ -93,6 +94,7 @@ class MissingtModelFile extends JModel
 			else {
 				$res->to = array();
 			}
+			
 			$this->_data = $res;
     }
 
@@ -132,7 +134,7 @@ class MissingtModelFile extends JModel
   
   function getResult()
   {
-		$post	= JRequest::get('post', JREQUEST_ALLOWRAW);		    
+  	$post = MissingtAdminHelper::getRealPOST();	    
     $text = $this->_convertToIni($post);
     return $text;
   }
@@ -148,17 +150,52 @@ class MissingtModelFile extends JModel
   }
   
   /**
+   * builds path to source file
+   * 
+   * @return string path
+   */
+  function getSource()
+  {
+  	global $option;
+  	
+		$app = &JFactory::getApplication();
+		$location   = $app->getUserState($option.'.files.location');
+		$filename = basename($this->_id);
+		$pospoint = strpos($filename, '.');
+		$lang     = substr($filename, 0, $pospoint);
+		
+		if ($location == 'backend') {
+			$path = JPATH_SITE.DS.'administrator'.DS.'language'.DS.$lang.DS.$filename;
+		}
+		else {
+			$path = JPATH_SITE.DS.'language'.DS.$lang.DS.$filename;
+		}
+		
+		return $path;  	
+  }
+  
+  /**
    * builds path to target file
    * 
    * @return string path
    */
   function getTarget()
   {
-		$to = JRequest::getVar('to', '', 'request', 'string');
+  	global $option;
+		$app = &JFactory::getApplication();
+		$location = $app->getUserState($option.'.files.location');
+		$to       = $app->getUserState($option.'.files.to');
 		$filename = basename($this->_id);
 		$pospoint = strpos($filename, '.');
 		$target = $to.substr($filename, $pospoint);
-		$path = dirname(dirname($this->_id)).DS.$to.DS.$target;
+		
+		if ($location == 'backend') {
+			$path = JPATH_SITE.DS.'administrator'.DS.'language'.DS.$to.DS.$target;
+		}
+		else {
+			$path = JPATH_SITE.DS.'language'.DS.$to.DS.$target;
+		}
+		
 		return $path;  	
   }
   

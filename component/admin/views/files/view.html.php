@@ -47,7 +47,7 @@ class MissingtViewFiles extends JView {
 		
 		MissingtAdminHelper::buildMenu();
     
-    $document->setTitle(JText::_('Missingt - Files'));
+    $document->setTitle(JText::_('COM_MISSINGT_VIEW_FILES_TITLE'));
     
     $rows   = & $this->get('Data');
     $languages_src = & $this->get('Languages');
@@ -58,9 +58,9 @@ class MissingtViewFiles extends JView {
     $filter_order     = $mainframe->getUserState( $option.'.files.filter_order',    'filter_order',   'name', 'cmd' );
     $filter_order_Dir = $mainframe->getUserState( $option.'.files.filter_order_Dir',  'filter_order_Dir', '',       'word' );
     $search           = $mainframe->getUserState( $option.'.files.search', 'search', '', 'string' );
-    $from = $mainframe->getUserState( $option.'.files.from', 'en-GB', 'request', 'string');
-    $to   = $mainframe->getUserState( $option.'.files.to', '', 'request', 'string');
-    
+    $from = $mainframe->getUserState( $option.'.files.from');
+    $to   = $mainframe->getUserState( $option.'.files.to');
+    $type = $mainframe->getUserState( $option.'.files.location');    
     
     // lists
     $lists = array();
@@ -70,8 +70,13 @@ class MissingtViewFiles extends JView {
     foreach($languages_src as $src) {
     	$options[] = JHTML::_('select.option', $src, $src);
     }    
-    $lists['from'] = JHTML::_('select.genericlist', $options, 'from', 'id="lg_from"', 'value', 'text', $from);
-    $lists['to']   = JHTML::_('select.genericlist', $options, 'to', 'id="lg_to"', 'value', 'text', $to);
+    $lists['from'] = JHTML::_('select.genericlist', $options, 'from', 'class="lg-refresh"', 'value', 'text', $from);
+    $lists['to']   = JHTML::_('select.genericlist', $options, 'to', 'class="lg-refresh"', 'value', 'text', $to);
+    
+    $options = array();
+    $options[] = JHTML::_('select.option', 'frontend', JText::_('COM_MISSINGT_VIEW_FILES_FRONTEND'));
+    $options[] = JHTML::_('select.option', 'backend', JText::_('COM_MISSINGT_VIEW_FILES_BACKEND'));
+    $lists['location']   = JHTML::_('select.genericlist', $options, 'location', 'class="lg-refresh"', 'value', 'text', $type);
     
     // table ordering
     $lists['order_Dir'] = $filter_order_Dir;

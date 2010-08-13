@@ -62,6 +62,7 @@ JHTML::_('behavior.tooltip');
 	<input type="hidden" name="controller" value="files" />
 	<input type="hidden" name="cid[]" value="<?php echo $this->file; ?>" />
 	<input type="hidden" name="to" value="<?php echo $this->to; ?>" />
+	<input type="hidden" name="location" value="<?php echo $this->location; ?>" />
 	<input type="hidden" name="format" value="<?php echo 'html'; ?>" />
 	<input type="hidden" name="task" value="" />
 </form>

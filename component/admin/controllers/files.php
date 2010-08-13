@@ -72,7 +72,7 @@ class MissingtControllerFiles extends JController
 	{
 		$cid = JRequest::getVar( 'cid', array(), 'post', 'array' );
 		$cid = $cid[0];
-		$post	= JRequest::get('post', JREQUEST_ALLOWRAW);
+  	$post = MissingtAdminHelper::getRealPOST();
 		// message type for redirect
 		$type = 'message';
 		

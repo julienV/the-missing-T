@@ -69,6 +69,7 @@ class MissingtModelFiles extends JModel
     $search     = $mainframe->getUserStateFromRequest( $option.'.files.search', 'search', '', 'string');
     $from       = $mainframe->getUserStateFromRequest( $option.'.files.from', 'from', 'en-GB', 'string' );
     $to         = $mainframe->getUserStateFromRequest( $option.'.files.to', 'to', '', 'string');
+    $type       = $mainframe->getUserStateFromRequest( $option.'.files.location', 'location', 'frontend', 'string');
 		
 		$this->setState('limit', $limit);
 		$this->setState('limitstart', $limitstart);
@@ -101,8 +102,25 @@ class MissingtModelFiles extends JModel
 	{
 		$files = $this->_getFiles();
 		$pagination = $this->getPagination();
-
+		
 		return array_slice($this->_data, $pagination->limitstart, $pagination->limit);
+	}
+	
+	/**
+	 * return files translation status
+	 * 
+	 * @return array
+	 */
+	function getStatus()
+	{
+		$files = $this->getData();
+		
+		$to = $this->getUserState();
+		
+		foreach ($files as $f)
+		{
+			
+		}
 	}
 
 	/**
@@ -126,7 +144,13 @@ class MissingtModelFiles extends JModel
 		{
 			$search = $app->getUserState($option.'.files.search');
 			$from   = $app->getUserState($option.'.files.from');
-			$files = JFolder::files(JPATH_SITE.DS.'language'.DS.$from, $search, false, true);
+			$type   = $app->getUserState($option.'.files.location');
+			if ($type == 'backend') {
+				$files = JFolder::files(JPATH_SITE.DS.'administrator'.DS.'language'.DS.$from, $search, false, false);
+			}
+			else {
+				$files = JFolder::files(JPATH_SITE.DS.'language'.DS.$from, $search, false, false);
+			}
 			sort($files);
 			$this->_data = $files;
 		}

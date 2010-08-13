@@ -11,7 +11,7 @@ $ordering = ($this->lists['order'] == 'o.ordering');
 <script language="javascript" type="text/javascript">
 	window.addEvent('domready', function(){
 
-		$('from').addEvent('change', function(){
+		$$('.lg-refresh').addEvent('change', function(){
 			$('adminForm').submit(); 
 		});		
 
@@ -25,8 +25,11 @@ $ordering = ($this->lists['order'] == 'o.ordering');
 <legend><?php echo JText::_('Languages')?></legend>
 
 <div id="languages_settings">
+<p>
 	<?php echo JText::_('COM_MISSINGT_FILES_LANGUAGE_FROM').$this->lists['from']; ?>
 	<?php echo JText::_('COM_MISSINGT_FILES_LANGUAGE_TO').$this->lists['to']; ?>
+</p>
+<p><?php echo JText::_('COM_MISSINGT_VIEW_FILES_LANGUAGE_SOURCE').': '.$this->lists['location']; ?></p>
 </div>
 
 </fieldset>
