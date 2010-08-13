@@ -31,6 +31,13 @@ class MissingtModelFiles extends JModel
 	 * @var array
 	 */
 	var $_data = null;
+	
+	/**
+	 * files array
+	 *
+	 * @var array
+	 */
+	var $_files = null;
 
 	/**
 	 * total
@@ -61,20 +68,22 @@ class MissingtModelFiles extends JModel
 	function __construct()
 	{
 		parent::__construct();
+		
+		$app = &JFactory::getApplication();
 
-		global $mainframe, $option;
+		global $option;
 
-    $limit      = $mainframe->getUserStateFromRequest( $option.'.files.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-    $limitstart = $mainframe->getUserStateFromRequest( $option.'.files.limitstart', 'limitstart', 0, 'int' );
-    $search     = $mainframe->getUserStateFromRequest( $option.'.files.search', 'search', '', 'string');
-    $from       = $mainframe->getUserStateFromRequest( $option.'.files.from', 'from', 'en-GB', 'string' );
-    $to         = $mainframe->getUserStateFromRequest( $option.'.files.to', 'to', '', 'string');
-    $type       = $mainframe->getUserStateFromRequest( $option.'.files.location', 'location', 'frontend', 'string');
+    $limit      = $app->getUserStateFromRequest( $option.'.files.limit', 'limit', $app->getCfg('list_limit'), 'int');
+    $limitstart = $app->getUserStateFromRequest( $option.'.files.limitstart', 'limitstart', 0, 'int' );
+    $search     = $app->getUserStateFromRequest( $option.'.files.search', 'search', '', 'string');
+    $from       = $app->getUserStateFromRequest( $option.'.files.from', 'from', 'en-GB', 'string' );
+    $to         = $app->getUserStateFromRequest( $option.'.files.to', 'to', '', 'string');
+    $type       = $app->getUserStateFromRequest( $option.'.files.location', 'location', 'frontend', 'string');
     
-    $mainframe->setUserState($option.'.files.search', $search);
-    $mainframe->setUserState($option.'.files.from', $from);
-    $mainframe->setUserState($option.'.files.to', $to);
-    $mainframe->setUserState($option.'.files.type', $type);
+    $app->setUserState($option.'.files.search', $search);
+    $app->setUserState($option.'.files.from', $from);
+    $app->setUserState($option.'.files.to', $to);
+    $app->setUserState($option.'.files.type', $type);
 		
 		$this->setState('limit', $limit);
 		$this->setState('limitstart', $limitstart);
@@ -105,40 +114,67 @@ class MissingtModelFiles extends JModel
 	 */
 	function getData()
 	{
-		$files = $this->_getFiles();
-		$pagination = $this->getPagination();
-		
-		return array_slice($this->_data, $pagination->limitstart, $pagination->limit);
-	}
-		
-	/**
-	 * return files translation status
-	 * 
-	 * @return array
-	 */
-	function getStatus()
-	{
-		global $option;
-		$app = &JFactory::getApplication();
-		
-		$to   = $app->getUserState($option.'.files.to');
-			
-		$files = $this->getData();
-		$target = $this->_getTargetFiles();
-		
-		$res = array();
-		foreach ($files as $k => $f)
+		if (empty($this->_data))
 		{
-			$pospoint = strpos($f, '.');
-			$file = $to.substr($f, $pospoint);
-			if (!in_array($file, $target)) {
-				$res[$f] = 0;
+			global $option;
+			$app = &JFactory::getApplication();
+		
+			$files = $this->_getFiles();
+			$pagination = $this->getPagination();
+			
+			$files = array_slice($this->_files, $pagination->limitstart, $pagination->limit);
+						
+			$data = array();
+			foreach ($files as $k => $file)
+			{
+				$obj = new stdclass();
+				$obj->file = $file;
+				$this->_auditFile($obj, $app->getUserState($option.'.files.from'), $app->getUserState($option.'.files.to'));
+				$data[] = $obj;
 			}
-			else {
-				$res[$f] = 1;
-			}
+			$this->_data = $data;
 		}
-		return $res;
+		
+		return $this->_data;
+	}
+	
+	/**
+	 * get translation stats for the file
+	 * @param string full file path
+	 * @param string from language code
+	 * @param string to language code
+	 */
+	function _auditFile(&$file, $from, $to)
+	{
+		$helper  = & JRegistryFormat::getInstance('INI');
+		$object  = $helper->stringToObject(file_get_contents($file->file));
+		$strings = get_object_vars($object);
+		$strings = array_filter($strings, array($this, '_filterempty')); // filter empty strings for comparison
+		
+		$file->total   = count($strings);
+			
+		$target_path = str_replace($from, $to, $file->file);
+		
+		if (!file_exists($target_path)) {
+			$file->translated = 0;
+		}
+		else
+		{
+			$helper  = & JRegistryFormat::getInstance('INI');
+			$object  = $helper->stringToObject(file_get_contents($target_path));
+			$strings_target = get_object_vars($object);
+			$strings_target = array_filter($strings_target, array($this, '_filterempty')); // filter empty strings for comparison
+			$file->translated = count(array_intersect_key($strings, $strings_target));
+		}
+	}
+	
+	/**
+	 * callback funtion to filter empty values of array
+	 * @param $string
+	 */
+	function _filterempty($element)
+	{
+		return (!empty($element));
 	}
 
 	/**
@@ -158,21 +194,21 @@ class MissingtModelFiles extends JModel
 	{	
 		global $option;
 		$app = &JFactory::getApplication();
-		if (empty($this->_data))
+		if (empty($this->_files))
 		{
 			$search = $app->getUserState($option.'.files.search');
 			$from   = $app->getUserState($option.'.files.from');
 			$type   = $app->getUserState($option.'.files.location');
 			if ($type == 'backend') {
-				$files = JFolder::files(JPATH_SITE.DS.'administrator'.DS.'language'.DS.$from, $search, false, false);
+				$files = JFolder::files(JPATH_SITE.DS.'administrator'.DS.'language'.DS.$from, $search, false, true);
 			}
 			else {
-				$files = JFolder::files(JPATH_SITE.DS.'language'.DS.$from, $search, false, false);
+				$files = JFolder::files(JPATH_SITE.DS.'language'.DS.$from, $search, false, true);
 			}
 			sort($files);
-			$this->_data = $files;
+			$this->_files = $files;
 		}
-		return $this->_data;
+		return $this->_files;
 	}
 	
 	function _getTargetFiles()

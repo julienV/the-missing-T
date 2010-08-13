@@ -68,6 +68,10 @@ class MissingtControllerFiles extends JController
 		parent::display();
 	}
 	
+	/**
+	 * save translatio to file
+	 * 
+	 */
   function save()
 	{
 		$cid = JRequest::getVar( 'cid', array(), 'post', 'array' );
@@ -99,20 +103,27 @@ class MissingtControllerFiles extends JController
 		$this->redirect();
 	}
 	
+	/**
+	 * export translation to plain text
+	 */
   function export()
 	{		
 		JRequest::setVar('view', 'file');
 		JRequest::setVar('layout', 'export');
-		JRequest::setVar('format', 'raw');
-		JRequest::setVar('tmpl', 'component');
 		parent::display();
 	}
 
+	/**
+	 * cancel translation
+	 */
 	function cancel()
 	{
 		$this->setRedirect( 'index.php?option=com_missingt&view=files' );
 	}
 	
+	/**
+	 * prepare display of translate screen
+	 */
 	function translate()
 	{
 		$cid = JRequest::getVar( 'cid', array(), 'request', 'array' );

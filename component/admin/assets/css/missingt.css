@@ -19,3 +19,7 @@ td.buttons img {
 	clear:both;
 	margin-bottom:10px;
 }
+
+table#files-translations tr.missing td {
+	background-color:pink;
+}

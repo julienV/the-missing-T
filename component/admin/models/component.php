@@ -312,7 +312,7 @@ class MissingtModelComponent extends JModel
   {  	
     $files = JFolder::files(JPATH_ROOT.DS.'components'.DS.$this->_id.DS.'views', '.xml$', true, true, array($this->_id.'.xml'));
     
-    foreach ($files as $file)
+    foreach ((array) $files as $file)
     {
   		$xml =& JFactory::getXMLParser('Simple');
 	  	$shortname = strstr($file, $this->_id);

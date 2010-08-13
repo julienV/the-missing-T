@@ -58,7 +58,7 @@ $ordering = ($this->lists['order'] == 'o.ordering');
 </table>
 
 <div id="editcell">
-  <table class="adminlist">
+  <table class="adminlist" id="files-translations">
   <thead>
     <tr>
       <th width="5">
@@ -71,7 +71,7 @@ $ordering = ($this->lists['order'] == 'o.ordering');
         <?php echo JHTML::_('grid.sort',  'Name', 'name', $this->lists['order_Dir'], $this->lists['order'] ); ?>
       </th>
       <th width="8%" nowrap="nowrap">
-        <?php echo JHTML::_('grid.sort',  'Status', 'status', $this->lists['order_Dir'], $this->lists['order'] ); ?>
+        <?php echo JText::_('COM_MISSINGT_STATUS'); ?>
       </th>
     </tr>
   </thead>
@@ -91,24 +91,27 @@ $ordering = ($this->lists['order'] == 'o.ordering');
   {
     $row = &$this->items[$i];
 
-    $link   = JRoute::_( 'index.php?option=com_missingt&controller=yyyy&task=edit&name[]='. $row );
+    $link   = JRoute::_( 'index.php?option=com_missingt&controller=yyyy&task=edit&name[]='. basename($row->file) );
 
     //$checked  = JHTML::_('grid.checkedout',   $row, $i );
 
     ?>
-    <tr class="<?php echo "row$k"; ?>">
+    <tr class="<?php echo "row$k".($row->translated == $row->total ? '' : ' missing'); ?>">
       <td>
         <?php echo $this->pagination->getRowOffset( $i ); ?>
       </td>
 			<td>
-				<input type="checkbox" onclick="isChecked(this.checked);" value="<?php echo $row; ?>" name="cid[]" id="cb<?php echo $i; ?>"/>
+				<input type="checkbox" onclick="isChecked(this.checked);" value="<?php echo basename($row->file); ?>" name="cid[]" id="cb<?php echo $i; ?>"/>
         <?php //echo $checked; ?>
       </td>
       <td>
-        <?php echo JHTML::link('#', basename($row), array('class' => 'editfile')); ?>
+        <?php echo JHTML::link('#', basename($row->file), array('class' => 'editfile')); ?>
       </td>
       <td>
-        <?php echo $this->status[$row]; ?>
+      	<?php if ($row->total): ?>
+        <?php echo $row->translated .' / ' .$row->total; ?>
+        <?php else: ?> - 
+        <?php endif; ?>
       </td>
     </tr>
     <?php

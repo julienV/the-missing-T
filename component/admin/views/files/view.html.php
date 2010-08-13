@@ -50,7 +50,6 @@ class MissingtViewFiles extends JView {
     $document->setTitle(JText::_('COM_MISSINGT_VIEW_TRANSLATIONS_TITLE'));
     
     $rows   = & $this->get('Data');
-    $status = & $this->get('Status');
     $languages_src = & $this->get('Languages');
     $total    = & $this->get( 'Total' );
     $pagination = & $this->get( 'Pagination' );
@@ -88,7 +87,6 @@ class MissingtViewFiles extends JView {
 
     $this->assignRef('user',    JFactory::getUser());
     $this->assignRef('items',    $rows);
-    $this->assignRef('status',   $status);
     $this->assignRef('lists',   $lists);
     $this->assignRef('pagination',  $pagination);
     $this->assignRef('request_url', $uri->toString());
