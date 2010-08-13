@@ -70,6 +70,11 @@ class MissingtModelFiles extends JModel
     $from       = $mainframe->getUserStateFromRequest( $option.'.files.from', 'from', 'en-GB', 'string' );
     $to         = $mainframe->getUserStateFromRequest( $option.'.files.to', 'to', '', 'string');
     $type       = $mainframe->getUserStateFromRequest( $option.'.files.location', 'location', 'frontend', 'string');
+    
+    $mainframe->setUserState($option.'.files.search', $search);
+    $mainframe->setUserState($option.'.files.from', $from);
+    $mainframe->setUserState($option.'.files.to', $to);
+    $mainframe->setUserState($option.'.files.type', $type);
 		
 		$this->setState('limit', $limit);
 		$this->setState('limitstart', $limitstart);
