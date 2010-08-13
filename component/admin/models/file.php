@@ -89,7 +89,16 @@ class MissingtModelFile extends JModel
 			if (file_exists($path))
 			{
 				$object = $helper->stringToObject(file_get_contents($path));
-				$res->to = get_object_vars($object);
+				$strings = get_object_vars($object);
+				
+				$present = array();
+				foreach ($res->from as $k => $v) 
+				{
+					if (isset($strings[$k]) && !empty($strings[$k])) {
+						$present[$k] = $strings[$k];
+					}
+				}				
+				$res->to = $present;
 			}
 			else {
 				$res->to = array();

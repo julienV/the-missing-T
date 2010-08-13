@@ -64,7 +64,7 @@ $ordering = ($this->lists['order'] == 'o.ordering');
         <?php echo JHTML::_('grid.sort',  'Name', 'name', $this->lists['order_Dir'], $this->lists['order'] ); ?>
       </th>
       <th width="8%" nowrap="nowrap">
-        <?php echo JHTML::_('grid.sort',  'Date modified', 'modified', $this->lists['order_Dir'], $this->lists['order'] ); ?>
+        <?php echo JHTML::_('grid.sort',  'Status', 'status', $this->lists['order_Dir'], $this->lists['order'] ); ?>
       </th>
     </tr>
   </thead>
@@ -101,7 +101,7 @@ $ordering = ($this->lists['order'] == 'o.ordering');
         <?php echo basename($row); ?>
       </td>
       <td>
-        <?php //echo $row->name; ?>
+        <?php echo $this->status[$row]; ?>
       </td>
     </tr>
     <?php

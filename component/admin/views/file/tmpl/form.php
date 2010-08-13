@@ -38,6 +38,7 @@ JHTML::_('behavior.tooltip');
 <?php echo JHTML::image('administrator/components/com_missingt/assets/images/warning_16.png', JText::_('COM_MISSINGT_FILE_NOT_WRITABLE')).' '.JText::_('COM_MISSINGT_FILE_NOT_WRITABLE'); ?>
 <?php endif; ?>
 </p>
+<p><?php echo JText::_('COM_MISSINGT_FILE_TOTAL_TRANSLATED'); ?>: <?php echo count($this->data->to).'/'.count($this->data->from); ?></p>
 </div>
 	
 <table class="adminlist">

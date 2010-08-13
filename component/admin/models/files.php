@@ -110,7 +110,7 @@ class MissingtModelFiles extends JModel
 		
 		return array_slice($this->_data, $pagination->limitstart, $pagination->limit);
 	}
-	
+		
 	/**
 	 * return files translation status
 	 * 
@@ -118,14 +118,27 @@ class MissingtModelFiles extends JModel
 	 */
 	function getStatus()
 	{
-		$files = $this->getData();
+		global $option;
+		$app = &JFactory::getApplication();
 		
-		$to = $this->getUserState();
-		
-		foreach ($files as $f)
-		{
+		$to   = $app->getUserState($option.'.files.to');
 			
+		$files = $this->getData();
+		$target = $this->_getTargetFiles();
+		
+		$res = array();
+		foreach ($files as $k => $f)
+		{
+			$pospoint = strpos($f, '.');
+			$file = $to.substr($f, $pospoint);
+			if (!in_array($file, $target)) {
+				$res[$f] = 0;
+			}
+			else {
+				$res[$f] = 1;
+			}
 		}
+		return $res;
 	}
 
 	/**
@@ -160,6 +173,30 @@ class MissingtModelFiles extends JModel
 			$this->_data = $files;
 		}
 		return $this->_data;
+	}
+	
+	function _getTargetFiles()
+	{
+		global $option;
+		$app = &JFactory::getApplication();
+		
+		$search = $app->getUserState($option.'.files.search');
+		$to     = $app->getUserState($option.'.files.to');
+		$from   = $app->getUserState($option.'.files.from');
+		$type   = $app->getUserState($option.'.files.location');
+		
+		if ($to == $from)
+		{
+			return $this->getData();
+		}
+	
+		if ($type == 'backend') {
+			$files = JFolder::files(JPATH_SITE.DS.'administrator'.DS.'language'.DS.$to, $search, false, false);
+		}
+		else {
+			$files = JFolder::files(JPATH_SITE.DS.'language'.DS.$to, $search, false, false);
+		}
+		return $files;
 	}
 	
 	function getLanguages()
