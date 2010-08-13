@@ -41,9 +41,9 @@ class MissingtViewFiles extends JView {
 		$document->addStyleSheet('components/com_missingt/assets/css/missingt.css');
 		
 		//build toolbar
-		JToolBarHelper::title( JText::_( 'Missingt - Files' ), 'files' );
+		JToolBarHelper::title( JText::_( 'COM_MISSINGT_VIEW_FILES_TITLE' ), 'files' );
     JToolBarHelper::custom('translate', 'forward.png', 'forward.png', 'COM_MISSINGT_FILES_TOOLBAR_TRANSLATE', true, true);
-		JToolBarHelper::help( 'missingt.files', true );
+    JToolBarHelper::help( 'missingt.main', true );
 		
 		MissingtAdminHelper::buildMenu();
     

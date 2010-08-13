@@ -137,6 +137,16 @@ class MissingtModelFile extends JModel
     return $text;
   }
   
+  function getWritable()
+  {
+  	$file = $this->getTarget();
+  	
+  	if (file_exists($file)) {
+  		return is_writable($file);
+  	}
+  	else return is_writable(dirname($file));
+  }
+  
   /**
    * builds path to target file
    * 

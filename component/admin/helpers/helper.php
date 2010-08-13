@@ -16,7 +16,7 @@ class MissingtAdminHelper {
     
     //Create Submenu
     JSubMenuHelper::addEntry( JText::_( 'HOME' ), 'index.php?option=com_missingt', ($view == ''));
-    JSubMenuHelper::addEntry( JText::_( 'YYYY' ), 'index.php?option=com_missingt&view=yyyy', ($view == 'yyyy'));
+//    JSubMenuHelper::addEntry( JText::_( 'YYYY' ), 'index.php?option=com_missingt&view=yyyy', ($view == 'yyyy'));
   }
 }
 ?>

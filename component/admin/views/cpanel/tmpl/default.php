@@ -23,7 +23,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
             <div id="cpanel">
             <?php
             $link = 'index.php?option=com_missingt&view=files';
-            $this->quickiconButton( $link, 'query.png', JText::_( 'Users' ) );            
+            $this->quickiconButton( $link, 'query.png', JText::_( 'COM_MISSINGT_VIEW_FILES_TITLE' ) );            
             ?>
             </div>
           </td>

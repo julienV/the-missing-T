@@ -73,6 +73,8 @@ class MissingtControllerFiles extends JController
 		$cid = JRequest::getVar( 'cid', array(), 'post', 'array' );
 		$cid = $cid[0];
 		$post	= JRequest::get('post', JREQUEST_ALLOWRAW);
+		// message type for redirect
+		$type = 'message';
 		
 		$model = $this->getModel('file');
 
@@ -80,6 +82,7 @@ class MissingtControllerFiles extends JController
 			$msg = JText::_( 'COM_MISSINGT_FILE_SAVED_SUCCESS' );
 		} else {
 			$msg = JText::_( 'COM_MISSINGT_FILE_SAVED_FAILURE' ).$model->getError();
+			$type = 'error';
 		}
 		
 		if ( $this->getTask() == 'save' ) {
@@ -88,7 +91,8 @@ class MissingtControllerFiles extends JController
 		else {
 			$link = 'index.php?option=com_missingt&controller=files&task=translate&cid[]='.$cid;
 		}
-		$this->setRedirect($link, $msg);
+		$this->setRedirect($link, $msg, $type);
+		$this->redirect();
 	}
 	
   function export()
@@ -100,21 +104,6 @@ class MissingtControllerFiles extends JController
 		parent::display();
 	}
 
-	function remove()
-	{
-		$cid = JRequest::getVar( 'cid', array(), 'post', 'array' );
-		JArrayHelper::toInteger($cid);
-
-		if (count( $cid ) < 1) {
-			JError::raiseError(500, JText::_( 'Select an item to delete' ) );
-		}
-
-		$model = $this->getModel('files');
-
-		$this->setRedirect( 'index.php?option=com_missingt&view=files' );
-	}
-
-
 	function cancel()
 	{
 		$this->setRedirect( 'index.php?option=com_missingt&view=files' );
@@ -122,9 +111,9 @@ class MissingtControllerFiles extends JController
 	
 	function translate()
 	{
-		$cid = JRequest::getVar( 'cid', array(), 'post', 'array' );
+		$cid = JRequest::getVar( 'cid', array(), 'request', 'array' );
 		$cid = $cid[0];
-		 
+		
 		JRequest::setVar( 'view', 'file');
 		JRequest::setVar( 'layout', 'form');
 		parent::display();

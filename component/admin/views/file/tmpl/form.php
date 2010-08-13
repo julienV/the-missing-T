@@ -28,6 +28,17 @@ JHTML::_('behavior.tooltip');
 </script>
 
 <form action="index.php" method="post" name="adminForm" id="adminForm">
+
+<div class="info">
+<p><?php echo JText::_('COM_MISSINGT_FILE_TARGET_LABEL'); ?>: <?php echo $this->target; ?></p>
+<p class="<?php echo ($this->writable ? 'is-writable' : 'not-writable'); ?>">
+<?php if ($this->writable): ?>
+<?php echo JHTML::image('administrator/components/com_missingt/assets/images/ok_16.png', JText::_('COM_MISSINGT_FILE_WRITABLE')).' '.JText::_('COM_MISSINGT_FILE_WRITABLE'); ?>
+<?php else: ?>
+<?php echo JHTML::image('administrator/components/com_missingt/assets/images/warning_16.png', JText::_('COM_MISSINGT_FILE_NOT_WRITABLE')).' '.JText::_('COM_MISSINGT_FILE_NOT_WRITABLE'); ?>
+<?php endif; ?>
+</p>
+</div>
 	
 <table class="adminlist">
 	<thead>

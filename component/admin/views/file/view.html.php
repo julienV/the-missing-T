@@ -40,24 +40,29 @@ class MissingtViewFile extends JView {
     $cid  = $cid[0];
     $to   = JRequest::getVar('to', '', 'post', 'string');
     
-    $model = & $this->getModel();
-    $data  = & $this->get( 'Data');
-    $target = $this->get( 'Target');
+    $model    = & $this->getModel();
+    $data     = & $this->get( 'Data');
+    $target   = $this->get( 'Target');
+    $writable = $this->get( 'Writable');
             
     //create the toolbar
     JToolBarHelper::title( JText::_( 'COM_MISSINGT_TRANSLATE_FILE_TITLE' ), 'translate' );
-    JToolBarHelper::apply();
-    JToolBarHelper::save();
+    if ($writable) {
+	    JToolBarHelper::apply();
+	    JToolBarHelper::save();
+    }
     JToolBarHelper::custom('export', 'upload.png', 'upload.png', 'COM_MISSINGT_TRANSLATE_FILE_TOOLBAR_EXPORT', false);
     JToolBarHelper::spacer();
     JToolBarHelper::cancel();
     JToolBarHelper::spacer();
-    //JToolBarHelper::help( 'screen.webcast', true );
+    JToolBarHelper::help( 'missingt.main', true );
     
     //assign data to template
-    $this->assignRef('data',  $data);
-    $this->assign('file', $cid);
-    $this->assign('to',   $to);
+    $this->assignRef('data',    $data);
+    $this->assign('file',       $cid);
+    $this->assign('to',         $to);
+    $this->assign('writable',   $writable);
+    $this->assign('target',     $target);
     
     parent::display($tpl);
 	}
