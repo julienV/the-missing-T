@@ -50,10 +50,11 @@ JHTML::_('behavior.tooltip');
 		</tr>
 	</thead>
 	<?php foreach ($this->data->from as $key => $value): ?>
+	<?php $trans = (isset($this->data->to[$key]) ? $this->data->to[$key] : '' ); ?>
 	<tr>
 		<td class="key" width="10%"><?php echo $key; ?></td>
 		<td width="45%"><?php echo $value; ?></td>
-		<td width="45%"><textarea name="KEY_<?php echo $key; ?>" cols="40" rows="3"><?php echo (isset($this->data->to[$key]) ? $this->data->to[$key] : '' ); ?></textarea></td>
+		<td width="45%"><textarea name="KEY_<?php echo $key; ?>" cols="40" rows="3" class="<?php echo (empty($trans) ? 'no-trans':'' );?>"><?php echo $trans; ?></textarea></td>
 	</tr>
 	<?php endforeach; ?>
 </table>

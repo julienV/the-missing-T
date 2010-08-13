@@ -2,3 +2,7 @@
 
 /** header icons **/
 .icon-48-yyyy         { background-image: url(../images/icon-48-yyyy.png); }
+
+textarea.no-trans {
+	background-color:pink;
+}
