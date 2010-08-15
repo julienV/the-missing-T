@@ -44,14 +44,17 @@ JHTML::_('behavior.tooltip');
 <table class="adminlist">
 	<thead>
 		<tr>
+			<th width="5px">#</th>
 			<th width="10%"><?php echo JText::_('COM_MISSINGT_VIEW_FILE_HEADER_KEY'); ?></th>
 			<th width="45%"><?php echo JText::_('COM_MISSINGT_VIEW_FILE_HEADER_FROM'); ?></th>
 			<th width="45%"><?php echo JText::_('COM_MISSINGT_VIEW_FILE_HEADER_TO'); ?></th>
 		</tr>
 	</thead>
+	<?php $k = 1;?>
 	<?php foreach ($this->data->from as $key => $value): ?>
 	<?php $trans = (isset($this->data->to[$key]) ? $this->data->to[$key] : '' ); ?>
 	<tr>
+		<td width="5px"><?php echo $k++; ?></td>
 		<td class="key" width="10%"><?php echo $key; ?></td>
 		<td width="45%"><?php echo $value; ?></td>
 		<td width="45%"><textarea name="KEY_<?php echo $key; ?>" cols="40" rows="3" class="<?php echo (empty($trans) ? 'no-trans':'' );?>"><?php echo $trans; ?></textarea></td>
