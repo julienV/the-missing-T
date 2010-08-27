@@ -89,7 +89,11 @@ class MissingtControllerFiles extends JController
 			$link = 'index.php?option=com_missingt&view=files';
 		}
 		else {
-			$link = 'index.php?option=com_missingt&controller=files&task=translate&cid[]='.$cid;
+			$link = 'index.php?option=com_missingt&controller=files&task=translate&cid[]='.$cid
+			      . '&from='.JRequest::getVar('from')
+			      . '&to='.JRequest::getVar('to')
+			      . '&location='.JRequest::getVar('location')
+			      ;
 		}
 		$this->setRedirect($link, $msg, $type);
 		$this->redirect();

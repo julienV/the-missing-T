@@ -41,7 +41,7 @@ class MissingtViewFile extends JView {
 		$document->addStyleSheet('components/com_missingt/assets/css/missingt.css');
 
     //get vars
-    $cid      = JRequest::getVar( 'cid', array(0), 'post', 'array' );
+    $cid      = JRequest::getVar( 'cid', array(0), 'request', 'array' );
     $cid      = $cid[0];
     
     $model    = & $this->getModel();
