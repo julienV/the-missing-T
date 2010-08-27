@@ -31,6 +31,7 @@ class MissingtViewFile extends JView {
 		$app = &JFactory::getApplication();
 		$location = $app->getUserState($option.'.files.location');
 		$to       = $app->getUserState($option.'.files.to');
+		$from     = $app->getUserState($option.'.files.from');
         
     //initialise variables
     $document = & JFactory::getDocument();
@@ -49,7 +50,9 @@ class MissingtViewFile extends JView {
     $writable = $this->get( 'Writable');
             
     //create the toolbar
-    JToolBarHelper::title( JText::_( 'COM_MISSINGT_TRANSLATE_FILE_TITLE' ), 'translate' );
+    JToolBarHelper::title( JText::_( 'COM_MISSINGT_TRANSLATE_FILE_TITLE' ), 'missingt' );
+    JToolBarHelper::custom('copyall', 'copyall', 'copyall', 'COM_MISSINGT_TRANSLATE_FILE_TOOLBAR_COPYALL', false);
+    JToolBarHelper::custom('googleall', 'googleall.png', 'googleall.png', 'COM_MISSINGT_TRANSLATE_FILE_TOOLBAR_GOOGLEALL', false);
     if ($writable) {
 	    JToolBarHelper::apply();
 	    JToolBarHelper::save();
@@ -63,6 +66,7 @@ class MissingtViewFile extends JView {
     //assign data to template
     $this->assignRef('data',    $data);
     $this->assign('file',       $cid);
+    $this->assign('from',       $from);
     $this->assign('to',         $to);
     $this->assign('writable',   $writable);
     $this->assign('target',     $target);

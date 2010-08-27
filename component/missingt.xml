@@ -25,7 +25,7 @@
   <administration>
 	
   <!-- Administration Menu Section -->
-    <menu>Missing T</menu>
+    <menu img="components/com_missingt/assets/images/missingt_16.png">Missing T</menu>
       <submenu>
         <!-- Note that all & must be escaped to &amp; for the file to be valid XML and be parsed by the installer -->
     	<!-- 

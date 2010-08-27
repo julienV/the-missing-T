@@ -35,12 +35,12 @@ class MissingtViewCpanel extends JView {
 		$user 		= & JFactory::getUser();
 
 		//build toolbar
-		JToolBarHelper::title( JText::_( 'COM_MISSINGT_VIEW_CPANEL_TITLE' ), 'home' );
+		JToolBarHelper::title( JText::_( 'COM_MISSINGT_VIEW_CPANEL_TITLE' ), 'missingt' );
     JToolBarHelper::preferences('com_Missingt', '360');
 		JToolBarHelper::help( 'missingt.main', true );
 
 		//add css and submenu to document
-		$document->addStyleSheet('components/com_Missingt/assets/css/Missingt.css');
+		$document->addStyleSheet('components/com_missingt/assets/css/missingt.css');
 
 		//assign vars to the template
 		$this->assignRef('pane'			, $pane);

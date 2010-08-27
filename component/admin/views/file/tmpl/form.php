@@ -9,13 +9,44 @@ defined('_JEXEC') or die('Restricted access');
 
 JHTML::_('behavior.tooltip');
 ?>
-
+<script type="text/javascript" src="http://www.google.com/jsapi">
+</script>
+<script type="text/javascript">
+  google.load("language", "1");
+</script>
 <script language="javascript" type="text/javascript">
-  
+
+	window.addEvent('domready', function(){
+		$$('.mtcopy').addEvent('click', function(event){
+			elcopy(event.target);
+		});
+
+		$$('.mtgtranslate').addEvent('click', function(event){
+			elgtranslate(event.target);
+		});
+	});
+	
+
 	function submitbutton(task)
 	{
 		var form = document.adminForm;
 
+		if (task == 'copyall') {
+			if (confirm("<?php echo JText::_('COM_MISSINGT_CONFIRM_COPYALL'); ?>")) {
+				$$('.mtcopy').each(function(element){
+					elcopy(element);
+				});
+			}
+			return;
+		}
+		if (task == 'googleall') {
+			if (confirm("<?php echo JText::_('COM_MISSINGT_CONFIRM_GOOGLEALL'); ?>")) {
+				$$('.mtcopy').each(function(element){
+					elgtranslate(element);
+				});
+			}
+			return;
+		}
 		if (task == 'cancel') {
 			submitform( task );
 		} else if (task == 'export'){
@@ -24,6 +55,24 @@ JHTML::_('behavior.tooltip');
 		} else {
 			submitform( task );
 		}
+	}
+
+	function elcopy(element)
+	{
+		var tr = $(element).getParent().getParent();
+		tr.getElement('.dest').value = tr.getElement('.src').getText();
+	}
+
+	function elgtranslate(element)
+	{
+		var tr = $(element).getParent().getParent();
+		var content = tr.getElement('.src').innerHTML;
+		google.language.translate(content, "<?php $ln = (explode('-',$this->from)); echo $ln[0]; ?>", "<?php $ln = (explode('-',$this->to)); echo $ln[0]; ?>", function(result) {
+			  if (!result.error) {
+				  var div = new Element('div').setHTML(result.translation); // trick to convert back html entities
+				  tr.getElement('.dest').value = div.innerHTML;
+			  }
+			});
 	}
 </script>
 
@@ -47,6 +96,7 @@ JHTML::_('behavior.tooltip');
 			<th width="5px">#</th>
 			<th width="10%"><?php echo JText::_('COM_MISSINGT_VIEW_FILE_HEADER_KEY'); ?></th>
 			<th width="45%"><?php echo JText::_('COM_MISSINGT_VIEW_FILE_HEADER_FROM'); ?></th>
+			<th width="5px"></th>
 			<th width="45%"><?php echo JText::_('COM_MISSINGT_VIEW_FILE_HEADER_TO'); ?></th>
 		</tr>
 	</thead>
@@ -56,8 +106,16 @@ JHTML::_('behavior.tooltip');
 	<tr>
 		<td width="5px"><?php echo $k++; ?></td>
 		<td class="key" width="10%"><?php echo $key; ?></td>
-		<td width="45%"><?php echo $value; ?></td>
-		<td width="45%"><textarea name="KEY_<?php echo $key; ?>" cols="40" rows="3" class="<?php echo (empty($trans) ? 'no-trans':'' );?>"><?php echo $trans; ?></textarea></td>
+		<td width="45%" class="src"><?php echo $value; ?></td>
+		<td class="buttons">
+			<?php if (empty($trans)): ?>
+			<?php echo JHTML::image( JURI::root().'administrator/components/com_missingt/assets/images/copy_16.png', 
+			                    JText::_('COM_MISSINGT_COPY'), array('class' => 'mtcopy')); ?>
+			<?php echo JHTML::image( JURI::root().'administrator/components/com_missingt/assets/images/google_16.png', 
+			                    JText::_('COM_MISSINGT_GOOGLE_TRANSLATE'), array('class' => 'mtgtranslate')); ?>
+			<?php endif; ?>
+		</td>
+		<td width="45%"><textarea name="KEY_<?php echo $key; ?>" cols="40" rows="3" class="dest<?php echo (empty($trans) ? ' no-trans':'' );?>"><?php echo $trans; ?></textarea></td>
 	</tr>
 	<?php endforeach; ?>
 </table>
@@ -66,6 +124,7 @@ JHTML::_('behavior.tooltip');
 	<input type="hidden" name="option" value="com_missingt" />
 	<input type="hidden" name="controller" value="files" />
 	<input type="hidden" name="cid[]" value="<?php echo $this->file; ?>" />
+	<input type="hidden" name="from" value="<?php echo $this->from; ?>" />
 	<input type="hidden" name="to" value="<?php echo $this->to; ?>" />
 	<input type="hidden" name="location" value="<?php echo $this->location; ?>" />
 	<input type="hidden" name="format" value="<?php echo 'html'; ?>" />
