@@ -49,7 +49,7 @@ class MissingtControllerFiles extends JController
 
 				// Checkout the project
 				$model = $this->getModel('file');
-				$model->checkout();
+//				$model->checkout();
 			} break;
 			case 'edit'    :
 			{
@@ -60,7 +60,7 @@ class MissingtControllerFiles extends JController
 
         // Checkout the project
         $model = $this->getModel('file');
-        $model->checkout();
+//        $model->checkout();
 			} break;
 		}
 		//default view

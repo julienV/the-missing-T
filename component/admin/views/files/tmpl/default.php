@@ -15,6 +15,13 @@ $ordering = ($this->lists['order'] == 'o.ordering');
 			$('adminForm').submit(); 
 		});		
 
+		$$('.editfile').addEvent('click', function(event){
+			var cb = $(event.target).getParent().getParent().getElement('input[id^=cb]');
+			cb.setProperty('checked', 'checked');
+			isChecked(cb.checked);
+			submitbutton('translate'); 
+		});		
+
 	});
 </script>
 
@@ -98,7 +105,7 @@ $ordering = ($this->lists['order'] == 'o.ordering');
         <?php //echo $checked; ?>
       </td>
       <td>
-        <?php echo basename($row); ?>
+        <?php echo JHTML::link('#', basename($row), array('class' => 'editfile')); ?>
       </td>
       <td>
         <?php echo $this->status[$row]; ?>
