@@ -15,8 +15,9 @@ class MissingtAdminHelper {
     $controller = JRequest::getVar('controller');
     
     //Create Submenu
-    JSubMenuHelper::addEntry( JText::_( 'HOME' ), 'index.php?option=com_missingt', ($view == ''));
-//    JSubMenuHelper::addEntry( JText::_( 'YYYY' ), 'index.php?option=com_missingt&view=yyyy', ($view == 'yyyy'));
+    JSubMenuHelper::addEntry( JText::_( 'COM_MISSINGT_HOME' ), 'index.php?option=com_missingt', ($view == ''));
+    JSubMenuHelper::addEntry( JText::_( 'COM_MISSINGT_TRANSLATIONS' ), 'index.php?option=com_missingt&view=files', ($view == 'files'));
+    JSubMenuHelper::addEntry( JText::_( 'COM_MISSINGT_COMPONENTS' ), 'index.php?option=com_missingt&view=components', ($view == 'components'));
   }
   
   function getRealPOST() 
@@ -31,5 +32,23 @@ class MissingtAdminHelper {
     }
     return $vars;
 	}  
+    
+	function _convertToIni($array)
+	{	
+		$handlerIni = & JRegistryFormat::getInstance('INI');
+		$object = new StdClass;
+		
+		foreach($array as $k=>$v) 
+		{
+			if (strpos($k, 'KEY_') === 0) {
+				$key = substr($k, 4);
+				$object->$key = $v;
+			}
+		}
+		
+		$string = $handlerIni->objectToString($object,null);	
+		
+		return $string;
+	}
 }
 ?>

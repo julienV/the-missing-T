@@ -20,10 +20,18 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
       <table class="adminlist">
         <tr>
           <td>
-            <div id="cpanel">
+            <div>
             <?php
             $link = 'index.php?option=com_missingt&view=files';
-            $this->quickiconButton( $link, 'query.png', JText::_( 'COM_MISSINGT_VIEW_FILES_TITLE' ) );            
+            $this->quickiconButton( $link, 'query.png', JText::_( 'COM_MISSINGT_VIEW_TRANSLATIONS_TITLE' ) );            
+            ?>
+            </div>
+          </td>
+          <td>
+            <div>
+            <?php
+            $link = 'index.php?option=com_missingt&view=components';
+            $this->quickiconButton( $link, 'query.png', JText::_( 'COM_MISSINGT_VIEW_COMPONENTS_TITLE' ) );            
             ?>
             </div>
           </td>
