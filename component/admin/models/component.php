@@ -144,8 +144,10 @@ class MissingtModelComponent extends JModel
       $this->_loadLangFile($this->_adminLangFile, 'admin');
       $this->_loadLangFile($this->_frontLangFile, 'front');
       
-      $this->_parsePhpFiles($this->_id);
-      $this->_parseXmlFiles($this->_id);
+      $this->_parsePhpFiles();
+      $this->_parseXmlFiles('admin');
+      $this->_parseXmlViewFiles();
+      $this->_parseXmlFiles('front');
       
       $this->_addNotUsed('admin');
       $this->_addNotUsed('front');
@@ -248,44 +250,117 @@ class MissingtModelComponent extends JModel
   }
   
 
-  function _parseXmlFiles()
+  function _parseXmlFiles($type = 'admin')
   {
-    $adminFiles =  JFolder::files(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id, '.xml', true, true, array($this->_id.'.xml'));
-    $frontFiles = JFolder::files(JPATH_ROOT.DS.'components'.DS.$this->_id, '.xml$', true, true, array($this->_id.'.xml'));
-    #*******************ADMIN XML PARSING***************************************
-    foreach ($adminFiles as $item)
+  	if ($type == 'admin')
+  	{
+	    $adminFiles =  JFolder::files(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id, '.xml', true, true, array($this->_id.'.xml'));
+	    foreach ($adminFiles as $item)
+	    {
+	    	$this->_parseXmlFile($item, 'admin');
+	    }
+  	}
+  	else 
+  	{
+  		$files =  JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id, '.xml', true, true, array($this->_id.'.xml', 'views')); // do not parse the views folder
+	    foreach ($files as $item)
+	    {
+	    	$this->_parseXmlFile($item, 'front');
+	    }
+  	}
+  }
+  
+  function _parseXmlFile($file, $type)
+  {
+  	$shortname = strstr($file, $this->_id);
+  	$shortname = substr(strstr($shortname,'/'), 1);
+  	$xml = new JParameter('', $file);
+  	
+  	if (!$xml->getGroups()) {
+  		return false;
+  	}
+  	
+  	$allProperties = $xml->getProperties(false);
+
+  	foreach ($xml->getGroups() as $key => $group)
+  	{
+  		$this->_xmlParsingAdmin[] = $key;
+  		if ($key !== '_default') {
+  			$this->_addFoundWord($key, $type, $shortname);  			
+  		}
+  		foreach ($allProperties['_xml'][$key]->_children as $param)
+  		{
+  			$this->_addFoundWord($param->attributes('label'), $type, $shortname);
+  			$this->_addFoundWord($param->attributes('description'), $type, $shortname);
+  			if (count($param->_children)>0)
+  			{
+  				foreach ($param->_children as $options)
+  				{
+  					if ($options->name()=='option')
+  					{
+  						$this->_addFoundWord($options->data(), $type, $shortname);
+  					}
+  				}
+  			}
+  		}
+  	}
+  	return true;
+  }
+
+  
+  function _parseXmlViewFiles()
+  {  	
+    $files = JFolder::files(JPATH_ROOT.DS.'components'.DS.$this->_id.DS.'views', '.xml$', true, true, array($this->_id.'.xml'));
+    
+    foreach ($files as $file)
     {
-    	$shortname = strstr($item, $this->_id);
-    	$shortname = substr(strstr($shortname,'/'), 1);
-      $xml = new JParameter('', $item);
-      if (!$xml->getGroups()) {
-      	continue;
-      }
-      $allProperties = $xml->getProperties(false);
-      
-      foreach ($xml->getGroups() as $key => $group)
-      {
-//        if ($key!='_default')
-//        {
-          $this->_xmlParsingAdmin[] = $key;
-          foreach ($allProperties['_xml'][$key]->_children as $param)
-          {
-          	$this->_addFoundWord($param->attributes('label'), 'admin', $shortname);
-            $this->_addFoundWord($param->attributes('description'), 'admin', $shortname);
-            if (count($param->_children)>0)
-            {
-              foreach ($param->_children as $options)
-              {
-                if ($options->name()=='option')
-                {
-                  $this->_addFoundWord($options->data(), 'admin', $shortname);
-                }
-              }
-            }
-          }
-//        }
-      }
+  		$xml =& JFactory::getXMLParser('Simple');
+	  	$shortname = strstr($file, $this->_id);
+	  	$shortname = 'FRONTEND '.substr(strstr($shortname,'/'), 1);
+			if ($xml->loadFile($file)) 
+			{
+				$document =& $xml->document;
+				if ($view = $document->getElementByPath('view')) // metadata file
+				{
+					$this->_addFoundWord($view->attributes('title'), 'admin', $shortname);
+					if ($message = $view->getElementByPath('message')) {
+						$this->_addFoundWord($message->data(), 'admin', $shortname);
+					}
+				}
+				if ($view = $document->getElementByPath('layout')) // layout file
+				{
+					$this->_addFoundWord($view->attributes('title'), 'admin', $shortname);
+					if ($message = $view->getElementByPath('message')) {
+						$this->_addFoundWord($message->data(), 'admin', $shortname);
+					}
+				}
+				if ($state = $document->getElementByPath('state'))
+				{
+					$groups = $state->children();
+					foreach((array) $groups AS $group)
+					{
+						if ($group->attributes('group')) {
+							$this->_addFoundWord($group->attributes('group'), 'admin', $shortname);
+						}
+						foreach((array) $group->children() as $param) 
+						{
+							if ($param->attributes('label')) {
+								$this->_addFoundWord($param->attributes('label'), 'admin', $shortname);
+							}
+							if ($param->attributes('description')) {
+								$this->_addFoundWord($param->attributes('description'), 'admin', $shortname);
+							}
+							foreach ($param->children() as $option) {
+//								echo '<pre>';print_r($option); echo '</pre>';exit;
+								$this->_addFoundWord($option->data(), 'admin', $shortname);								
+							}
+						}
+					}
+				}
+			}
+			$this->_parseXmlFile($file, 'admin');
     }
+  	return true;
   }
   
   function _addNotUsed($type)
