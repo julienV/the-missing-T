@@ -51,13 +51,13 @@ class MissingtViewFile extends JView {
             
     //create the toolbar
     JToolBarHelper::title( JText::_( 'COM_MISSINGT_TRANSLATE_FILE_TITLE' ), 'missingt' );
-    JToolBarHelper::custom('copyall', 'copyall', 'copyall', 'COM_MISSINGT_TRANSLATE_FILE_TOOLBAR_COPYALL', false);
-    JToolBarHelper::custom('googleall', 'googleall.png', 'googleall.png', 'COM_MISSINGT_TRANSLATE_FILE_TOOLBAR_GOOGLEALL', false);
+    JToolBarHelper::custom('copyall', 'copyall', 'copyall', JText::_('COM_MISSINGT_TRANSLATE_FILE_TOOLBAR_COPYALL'), false);
+    JToolBarHelper::custom('googleall', 'googleall.png', 'googleall.png', JText::_('COM_MISSINGT_TRANSLATE_FILE_TOOLBAR_GOOGLEALL'), false);
     if ($writable) {
 	    JToolBarHelper::apply();
 	    JToolBarHelper::save();
     }
-    JToolBarHelper::custom('export', 'upload.png', 'upload.png', 'COM_MISSINGT_TRANSLATE_FILE_TOOLBAR_EXPORT', false);
+    JToolBarHelper::custom('export', 'upload.png', 'upload.png', JText::_('COM_MISSINGT_TRANSLATE_FILE_TOOLBAR_EXPORT'), false);
     JToolBarHelper::spacer();
     JToolBarHelper::cancel();
     JToolBarHelper::spacer();
