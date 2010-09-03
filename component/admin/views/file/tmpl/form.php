@@ -95,9 +95,9 @@ JHTML::_('behavior.tooltip');
 		<tr>
 			<th width="5px">#</th>
 			<th width="10%"><?php echo JText::_('COM_MISSINGT_VIEW_FILE_HEADER_KEY'); ?></th>
-			<th width="45%"><?php echo JText::_('COM_MISSINGT_VIEW_FILE_HEADER_FROM'); ?></th>
+			<th width="45%"><?php echo $this->from; ?></th>
 			<th width="5px"></th>
-			<th width="45%"><?php echo JText::_('COM_MISSINGT_VIEW_FILE_HEADER_TO'); ?></th>
+			<th width="45%"><?php echo $this->to; ?></th>
 		</tr>
 	</thead>
 	<?php $k = 1;?>
