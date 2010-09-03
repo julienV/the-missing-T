@@ -86,5 +86,19 @@ class MissingtControllerComponents extends JController
 		$this->setRedirect($link, $msg, $type);
 		$this->redirect();
 	}
+	
+	function history()
+	{
+		$cid = JRequest::getVar( 'cid', array(), 'request', 'array' );
+		$cid = $cid[0];
+		
+		if (JRequest::getVar('location') == 'frontend') {
+			$path = 'language'.DS.'en-GB'.DS.'en-GB.'.$cid.'.ini';
+		}
+		else {
+			$path = 'administrator'.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$cid.'.ini';
+		}
+		$this->setRedirect( 'index.php?option=com_missingt&controller=history&file='.urlencode($path) );
+	}
 }
 ?>

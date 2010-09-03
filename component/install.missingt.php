@@ -20,6 +20,6 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
  * @since 0.1
  */
 function com_install() {
-echo '<strong>'.JText::_('Component installed').'</strong>';
+	echo '<strong>'.JText::_('COM_MISSINGT_INSTALL_SUCCESS').'</strong>';
 }
 ?>

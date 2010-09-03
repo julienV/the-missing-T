@@ -170,6 +170,7 @@ class MissingtModelComponent extends JModel
 			
   	if (JFile::exists($file))
   	{
+  		MissingtAdminHelper::checkHistory($file);
   		$object = $helper->stringToObject(file_get_contents($file));
 	  	if ($location == 'front') {
 				$this->_currentLangFront = get_object_vars($object);  		
@@ -464,6 +465,15 @@ class MissingtModelComponent extends JModel
 		if (!$ret) {
 			$this->setError('COM_MISSINGT_ERROR_WRITING_FILE');
 			return false;
+		}
+		
+		// update history table
+		$history = $this->getTable('history', 'MissingtTable');
+		$history->file = substr($target, strlen(JPATH_SITE)+1);
+		$history->text = $text;
+		if (!($history->check() && $history->store())) {
+			$this->setError('COM_MISSINGT_ERROR_WRITING_HISTORY');
+			return false;			
 		}
     return true;
   }

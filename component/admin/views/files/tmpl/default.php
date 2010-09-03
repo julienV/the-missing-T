@@ -91,7 +91,7 @@ $ordering = ($this->lists['order'] == 'o.ordering');
   {
     $row = &$this->items[$i];
 
-    $link   = JRoute::_( 'index.php?option=com_missingt&controller=yyyy&task=edit&name[]='. basename($row->file) );
+    $link   = JRoute::_( 'index.php?option=com_missingt&controller=files&task=edit&name[]='. basename($row->file) );
 
     //$checked  = JHTML::_('grid.checkedout',   $row, $i );
 
@@ -105,7 +105,7 @@ $ordering = ($this->lists['order'] == 'o.ordering');
         <?php //echo $checked; ?>
       </td>
       <td>
-        <?php echo JHTML::link('#', basename($row->file), array('class' => 'editfile')); ?>
+        <?php echo JHTML::link('#', str_replace($this->from, $this->to, basename($row->file)), array('class' => 'editfile')); ?>
       </td>
       <td>
       	<?php if ($row->total): ?>

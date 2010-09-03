@@ -34,7 +34,7 @@ class MissingtModelFile extends JModel
   var $_id = null;
 
   /**
-   * venue data array
+   * data array
    *
    * @var array
    */
@@ -86,6 +86,7 @@ class MissingtModelFile extends JModel
 			
 			// target file
 			$path = $this->getTarget();
+  		MissingtAdminHelper::checkHistory($path);
 			if (file_exists($path))
 			{
 				$object = $helper->stringToObject(file_get_contents($path));
@@ -138,6 +139,16 @@ class MissingtModelFile extends JModel
 			$this->setError('COM_MISSINGT_ERROR_WRITING_FILE');
 			return false;
 		}
+		
+		// update history table
+		$history = $this->getTable('history', 'MissingtTable');
+		$history->file = substr($target, strlen(JPATH_SITE)+1);
+		$history->text = $text;
+		if (!($history->check() && $history->store())) {
+			$this->setError('COM_MISSINGT_ERROR_WRITING_HISTORY');
+			return false;			
+		}
+		
     return true;
   }
   

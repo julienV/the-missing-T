@@ -37,14 +37,15 @@ class MissingtViewComponent extends JView {
 	
 	function _displayExport($tpl = null)
 	{		
+    $document = & JFactory::getDocument();
+    $document->setMimeEncoding('text/plain');
+    $date = gmdate('D, d M Y H:i:s', time()).' GMT';
+		$document->setModifiedDate($date);		
+        
 		$target = basename($this->get('Target'));
+		JResponse::setHeader( 'Content-Disposition', 'attachment; filename='.$target);
 		$data   = & $this->get( 'Result');
-		header('Content-Type: text/plain');
-		header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-		header('Content-Disposition: attachment; filename='.$target);
-		header('Pragma: no-cache');
 		echo($data);
-		exit;
 	}
 }
 ?>

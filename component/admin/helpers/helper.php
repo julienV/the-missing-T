@@ -50,5 +50,50 @@ class MissingtAdminHelper {
 		
 		return $string;
 	}
+	
+	
+	function checkHistory($path)
+	{
+		$db = &JFactory::getDBO();
+		
+		if (strstr($path, JPATH_SITE)) {
+			$file = substr($path, strlen(JPATH_SITE)+1); 
+		}
+		
+		$fullpath = JPATH_SITE.DS.$file;
+		if (!file_exists($fullpath)) {
+			return true;
+		}
+		
+		$query = ' SELECT sha ' 
+		       . ' FROM #__missingt_history ' 
+		       . ' WHERE file = ' . $db->Quote($file)
+		       . ' ORDER BY id DESC'
+		       ;
+		$db->setQuery($query);
+		$res = $db->loadResult();
+		
+		if (!$res || sha1_file($fullpath) != $res) {
+			return self::updateHistory($file);
+		}
+		return true;
+	}
+	
+	function updateHistory($file)
+	{
+		$fullpath = JPATH_SITE.DS.$file;
+		
+		// update history table
+		$history = &JTable::getInstance('history', 'MissingtTable');
+		$history->file = $file;
+		$history->text = file_get_contents($fullpath);
+		$history->note = JText::_('COM_MISSINGT_HISTORY_NOTE_EXTERNAL_CHANGES');
+		if (!($history->check() && $history->store())) {
+			$this->setError('COM_MISSINGT_ERROR_WRITING_HISTORY');
+			return false;			
+		}
+		
+		return true;
+	}
 }
 ?>

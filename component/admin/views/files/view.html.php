@@ -43,6 +43,7 @@ class MissingtViewFiles extends JView {
 		//build toolbar
 		JToolBarHelper::title( JText::_( 'COM_MISSINGT_VIEW_TRANSLATIONS_TITLE' ), 'missingt' );
     JToolBarHelper::custom('translate', 'forward.png', 'forward.png', JText::_('COM_MISSINGT_FILES_TOOLBAR_TRANSLATE'), true, true);
+    JToolBarHelper::custom('history', 'history', 'history', JText::_('COM_MISSINGT_FILES_TOOLBAR_HISTORY'), true, true);
     JToolBarHelper::help( 'missingt.main', true );
 		
 		MissingtAdminHelper::buildMenu();
@@ -85,11 +86,13 @@ class MissingtViewFiles extends JView {
     // search filter
     $lists['search']= $search;
 
-    $this->assignRef('user',    JFactory::getUser());
-    $this->assignRef('items',    $rows);
-    $this->assignRef('lists',   $lists);
+    $this->assignRef('user',        JFactory::getUser());
+    $this->assignRef('items',       $rows);
+    $this->assignRef('lists',       $lists);
     $this->assignRef('pagination',  $pagination);
     $this->assignRef('request_url', $uri->toString());
+    $this->assign('from',           $from);
+    $this->assign('to',             $to);
     
     parent::display($tpl);
 	}
