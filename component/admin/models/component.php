@@ -186,8 +186,12 @@ class MissingtModelComponent extends JModel
 		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.folder');
 
-		$adminFiles =  JFolder::files(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id, '.php', true, true);
-		$frontFiles = JFolder::files(JPATH_ROOT.DS.'components'.DS.$this->_id, '.php', true, true);
+		if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id)) {
+			$adminFiles = JFolder::files(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id, '.php', true, true);
+		}
+		if (file_exists(JPATH_SITE.DS.'components'.DS.$this->_id)) {
+			$frontFiles = JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id, '.php', true, true);
+		}
 
 		$pattern = "/JText::_\(\s*\'(.*)\'\s*\)"
              . "|JText::_\(\s*\"(.*)\"\s*\)"
@@ -254,19 +258,25 @@ class MissingtModelComponent extends JModel
   {
   	if ($type == 'admin')
   	{
-	    $adminFiles =  JFolder::files(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id, '.xml', true, true, array($this->_id.'.xml'));
-	    foreach ($adminFiles as $item)
-	    {
-	    	$this->_parseXmlFile($item, 'admin');
-	    }
+  		if (file_exists(file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id)))
+  		{
+		    $adminFiles =  JFolder::files(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id, '.xml', true, true, array($this->_id.'.xml'));
+		    foreach ($adminFiles as $item)
+		    {
+		    	$this->_parseXmlFile($item, 'admin');
+	    	}
+  		}
   	}
   	else 
   	{
-  		$files =  JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id, '.xml', true, true, array($this->_id.'.xml', 'views')); // do not parse the views folder
-	    foreach ($files as $item)
-	    {
-	    	$this->_parseXmlFile($item, 'front');
-	    }
+  		if (file_exists(file_exists(JPATH_SITE.DS.'components'.DS.$this->_id))) 
+  		{
+  			$files =  JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id, '.xml', true, true, array($this->_id.'.xml', 'views')); // do not parse the views folder
+		    foreach ($files as $item)
+		    {
+		    	$this->_parseXmlFile($item, 'front');
+		    }
+  		}
   	}
   }
   
@@ -310,7 +320,10 @@ class MissingtModelComponent extends JModel
   
   function _parseXmlViewFiles()
   {  	
-    $files = JFolder::files(JPATH_ROOT.DS.'components'.DS.$this->_id.DS.'views', '.xml$', true, true, array($this->_id.'.xml'));
+  	if (!file_exists(JPATH_SITE.DS.'components'.DS.$this->_id.DS.'views')) {
+  		return false;
+  	}
+    $files = JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id.DS.'views', '.xml$', true, true, array($this->_id.'.xml'));
     
     foreach ((array) $files as $file)
     {

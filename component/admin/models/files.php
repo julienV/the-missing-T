@@ -82,7 +82,7 @@ class MissingtModelFiles extends JModel
     
     $app->setUserState($option.'.files.search', $search);
     $app->setUserState($option.'.files.from', $from);
-    $app->setUserState($option.'.files.to', $to);
+    $this->setTo($to);
     $app->setUserState($option.'.files.type', $type);
 		
 		$this->setState('limit', $limit);
@@ -91,6 +91,45 @@ class MissingtModelFiles extends JModel
 		$array = JRequest::getVar('cid',  0, '', 'array');
 		$this->setId((int)$array[0]);
 
+	}
+	
+	/**
+	 * sets 'to', making sure it's not empty
+	 * @param string to language code
+	 */
+	function setTo($to)
+	{
+		global $option;
+		$app = &JFactory::getApplication();
+
+		if (!$to) 
+		{
+			$lang =& JFactory::getLanguage();
+			$languages = $lang->getKnownLanguages();
+			$current   = $lang->getTag();
+			
+			if ($current != 'en-GB') {
+				$to = $current;				
+			}
+			else 
+			{
+				foreach ($languages as $l) 
+				{
+					if ($l['tag'] != 'en-GB') 
+					{
+						$to = $l['tag'];	
+						break;	
+					}
+				}				
+			}
+			
+			if (!$to) 
+			{
+				JError::raiseWarning(0, JText::_('COM_MISSINGT_ERROR_ONLY_ENGLISH_INSTALLED'));
+				$to = 'en-GB';
+			}
+		}
+		$app->setUserState($option.'.files.to', $to);
 	}
 
 		/**
