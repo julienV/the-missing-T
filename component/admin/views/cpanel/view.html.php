@@ -34,6 +34,8 @@ class MissingtViewCpanel extends JView {
 		$pane   	= & JPane::getInstance('sliders');
 		$user 		= & JFactory::getUser();
 
+		MissingtAdminHelper::buildMenu();
+		
 		//build toolbar
 		JToolBarHelper::title( JText::_( 'COM_MISSINGT_VIEW_CPANEL_TITLE' ), 'missingt' );
     JToolBarHelper::preferences('com_Missingt', '360');

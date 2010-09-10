@@ -18,6 +18,7 @@ class MissingtAdminHelper {
     JSubMenuHelper::addEntry( JText::_( 'COM_MISSINGT_HOME' ), 'index.php?option=com_missingt', ($view == ''));
     JSubMenuHelper::addEntry( JText::_( 'COM_MISSINGT_TRANSLATIONS' ), 'index.php?option=com_missingt&view=files', ($view == 'files'));
     JSubMenuHelper::addEntry( JText::_( 'COM_MISSINGT_COMPONENTS' ), 'index.php?option=com_missingt&view=components', ($view == 'components'));
+    JSubMenuHelper::addEntry( JText::_( 'COM_MISSINGT_ABOUT' ), 'index.php?option=com_missingt&view=about', ($view == 'about'));
   }
   
   function getRealPOST() 
