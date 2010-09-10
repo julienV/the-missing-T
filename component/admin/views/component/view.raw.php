@@ -22,20 +22,9 @@ jimport( 'joomla.application.component.view');
  * @subpackage Missingt
  * @since 0.1
  */
-class MissingtViewComponent extends JView {
-
-	function display($tpl = null)
-	{		
-    global $mainframe;
-    
-    if ($this->getLayout() == 'export') {
-    	return $this->_displayExport($tpl);
-    }
-        
-    parent::display($tpl);
-	}
-	
-	function _displayExport($tpl = null)
+class MissingtViewComponent extends JView 
+{	
+	function export($tpl = null)
 	{		
     $document = & JFactory::getDocument();
     $document->setMimeEncoding('text/plain');
@@ -45,6 +34,19 @@ class MissingtViewComponent extends JView {
 		$target = basename($this->get('Target'));
 		JResponse::setHeader( 'Content-Disposition', 'attachment; filename='.$target);
 		$data   = & $this->get( 'Result');
+		echo($data);
+	}
+	
+	function exportmissing($tpl = null)
+	{		
+    $document = & JFactory::getDocument();
+    $document->setMimeEncoding('text/plain');
+    $date = gmdate('D, d M Y H:i:s', time()).' GMT';
+		$document->setModifiedDate($date);		
+        
+		$target = basename($this->get('Target'));
+		JResponse::setHeader( 'Content-Disposition', 'attachment; filename='.$target);
+		$data   = & $this->get( 'ResultMissing');
 		echo($data);
 	}
 }

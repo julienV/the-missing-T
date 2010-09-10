@@ -70,7 +70,7 @@ JHTML::_('behavior.tooltip');
 		<tr>
 			<td width="5px"><?php echo $k++; ?></td>
 			<td class="key" width="10%"><?php echo $key; ?></td>
-			<td><textarea name="KEY_<?php echo $key; ?>" cols="40" rows="3" class="dest<?php echo (!$value->defined ? ' no-trans':'' );?>"><?php echo $value->value; ?></textarea></td>
+			<td><textarea name="KEY_<?php echo $key; ?>" cols="40" rows="3" class="dest<?php echo (empty($value->value) ? ' no-trans':'' );?>"><?php echo $value->value; ?></textarea></td>
 		</tr>
 		<?php endforeach; ?>
 	<?php endforeach; ?>

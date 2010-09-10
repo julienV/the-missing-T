@@ -53,6 +53,7 @@ class MissingtViewComponent extends JView {
 	    JToolBarHelper::save();
     }
     JToolBarHelper::custom('export', 'upload.png', 'upload.png', JText::_('COM_MISSINGT_TRANSLATE_FILE_TOOLBAR_EXPORT'), false);
+    JToolBarHelper::custom('exportmissing', 'upload.png', 'upload.png', JText::_('COM_MISSINGT_TRANSLATE_FILE_TOOLBAR_EXPORT_MISSING'), false);
     JToolBarHelper::custom('history', 'history', 'history', JText::_('COM_MISSINGT_FILES_TOOLBAR_HISTORY'), false);
     JToolBarHelper::spacer();
     JToolBarHelper::cancel();

@@ -28,7 +28,8 @@ class MissingtControllerComponents extends JController
   {
     parent::__construct();
     
-		$this->registerTask( 'apply', 'save' );		
+		$this->registerTask( 'apply',         'save' );	
+		$this->registerTask( 'exportmissing', 'export' );		
   }
   
   function display()
@@ -43,14 +44,30 @@ class MissingtControllerComponents extends JController
     JRequest::setVar('layout', 'form');
   	parent::display();
   }
+
 	
-  function export()
-	{		
-		JRequest::setVar('view', 'component');
-		JRequest::setVar('layout', 'export');
+	function export()
+	{
+		// Set the view and the model
+		$view   = JRequest::getVar( 'view', 'component' );
+		$layout = JRequest::getVar( 'layout', 'export' );
 		JRequest::setVar('format', 'raw');
-		JRequest::setVar('tmpl', 'component');
-		parent::display();
+		
+		$view = & $this->getView( $view, 'raw' );
+		
+		$model = & $this->getModel( 'component' );
+		$view->setModel( $model, true );
+		
+		$view->setLayout( $layout );
+		
+		// Display the view
+		$task = JRequest::getVar('task');
+		if ($task == 'exportmissing') {
+			$view->exportmissing();		
+		}
+		else {			
+			$view->export();
+		}
 	}
 
 	function cancel()
