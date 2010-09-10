@@ -259,7 +259,7 @@ class MissingtModelComponent extends JModel
 	{
 		if ($type == 'admin')
 		{
-			if (file_exists(file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id)))
+			if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id))
 			{
 				$adminFiles =  JFolder::files(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id, '.xml', true, true, array($this->_id.'.xml'));
 				foreach ($adminFiles as $item)
@@ -270,7 +270,7 @@ class MissingtModelComponent extends JModel
 		}
 		else
 		{
-			if (file_exists(file_exists(JPATH_SITE.DS.'components'.DS.$this->_id)))
+			if (file_exists(JPATH_SITE.DS.'components'.DS.$this->_id))
 			{
 				$files =  JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id, '.xml', true, true, array($this->_id.'.xml', 'views')); // do not parse the views folder
 				foreach ($files as $item)
@@ -307,7 +307,7 @@ class MissingtModelComponent extends JModel
 				{
 					foreach ($param->_children as $options)
 					{
-						if ($options->name()=='option')
+						if ($options->name()=='option' && !is_numeric($options->data()))
 						{
 							$this->_addFoundWord($options->data(), $type, $shortname);
 						}
@@ -351,28 +351,37 @@ class MissingtModelComponent extends JModel
 				if ($state = $document->getElementByPath('state'))
 				{
 					$groups = $state->children();
-					foreach((array) $groups AS $group)
+					foreach((array) $state->children() AS $element)
 					{
-						if ($group->attributes('group')) {
-							$this->_addFoundWord($group->attributes('group'), 'admin', $shortname);
-						}
-						foreach((array) $group->children() as $param)
+						switch ($element->name())
 						{
-							if ($param->attributes('label')) {
-								$this->_addFoundWord($param->attributes('label'), 'admin', $shortname);
-							}
-							if ($param->attributes('description')) {
-								$this->_addFoundWord($param->attributes('description'), 'admin', $shortname);
-							}
-							foreach ($param->children() as $option) {
-								//								echo '<pre>';print_r($option); echo '</pre>';exit;
-								$this->_addFoundWord($option->data(), 'admin', $shortname);
-							}
+							case 'name':
+							case 'description':
+								$this->_addFoundWord($element->data(), 'admin', $shortname);
+								break;
+								
+							case 'params':
+							case 'url':
+								if ($element->attributes('group')) {
+									$this->_addFoundWord($element->attributes('group'), 'admin', $shortname);
+								}
+								foreach((array) $element->children() as $param)
+								{
+									if ($param->attributes('label')) {
+										$this->_addFoundWord($param->attributes('label'), 'admin', $shortname);
+									}
+									if ($param->attributes('description')) {
+										$this->_addFoundWord($param->attributes('description'), 'admin', $shortname);
+									}
+									foreach ($param->children() as $option) {
+										$this->_addFoundWord($option->data(), 'admin', $shortname);
+									}
+								}
+								break;
 						}
 					}
 				}
 			}
-			$this->_parseXmlFile($file, 'admin');
 		}
 		return true;
 	}
