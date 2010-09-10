@@ -80,17 +80,16 @@ class MissingtModelFile extends JModel
     	$res = new stdclass();
     	// original file
     	$source = $this->getSource();
-    	$helper = & JRegistryFormat::getInstance('INI');
-			$object = $helper->stringToObject(file_get_contents($source));
-			$res->from = get_object_vars($object);
-			
+			$object = MissingtAdminHelper::parseIni(file_get_contents($source));
+			$res->from = $object->lines;
+						
 			// target file
 			$path = $this->getTarget();
   		MissingtAdminHelper::checkHistory($path);
 			if (file_exists($path))
 			{
-				$object = $helper->stringToObject(file_get_contents($path));
-				$strings = get_object_vars($object);
+				$object = MissingtAdminHelper::parseIni(file_get_contents($path));
+				$strings = $object->lines;
 				
 				$present = array();
 				foreach ($res->from as $k => $v) 
@@ -220,21 +219,17 @@ class MissingtModelFile extends JModel
   }
   
 	function _convertToIni($array)
-	{	
-		$handlerIni = & JRegistryFormat::getInstance('INI');
-		$object = new StdClass;
-		
+	{			
+		$data = array();
 		foreach($array as $k=>$v) 
 		{
 			if (strpos($k, 'KEY_') === 0) {
 				$key = substr($k, 4);
-				$object->$key = $v;
+				$data[$key] = $v;
 			}
 		}
 		
-		$string = $handlerIni->objectToString($object,null);	
-		
-		return $string;
+		return MissingtAdminHelper::arrayToIni($data);
 	}
 }
 ?>

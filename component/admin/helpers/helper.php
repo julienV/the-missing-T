@@ -95,5 +95,146 @@ class MissingtAdminHelper {
 		
 		return true;
 	}
+	
+	function parseIni($data)
+	{
+		$lines = explode("\n", $data);
+			
+		$obj = new stdClass();
+		$obj->lines = array();
+
+		$sec_name = '';
+		$unparsed = 0;
+		if (!$lines) {
+			return $obj;
+		}
+
+		$i = 0;
+		foreach ($lines as $line)
+		{
+			// ignore comments
+			if ($line && $line{0} == ';') {
+				$obj->lines['not_a_key_line'.$i++] = $line;
+				continue;
+			}
+
+			$line = trim($line);			
+
+			if ($line == '') {
+				$obj->lines['not_a_key_line'.$i++] = $line;
+				continue;
+			}
+
+			$lineLen = strlen($line);
+			
+			if ($pos = strpos($line, '='))
+			{
+				$property = trim(substr($line, 0, $pos));
+
+				// property is assumed to be ascii
+				if ($property && $property{0} == '"')
+				{
+					$propLen = strlen( $property );
+					if ($property{$propLen-1} == '"') {
+						$property = stripcslashes(substr($property, 1, $propLen - 2));
+					}
+				}
+				// AJE: 2006-11-06 Fixes problem where you want leading spaces
+				// for some parameters, eg, class suffix
+				// $value = trim(substr($line, $pos +1));
+				$value = substr($line, $pos +1);
+
+				if (strpos($value, '|') !== false && preg_match('#(?<!\\\)\|#', $value))
+				{
+					$newlines = explode('\n', $value);
+					$values = array();
+					foreach($newlines as $newlinekey=>$newline) {
+
+						// Explode the value if it is serialized as an arry of value1|value2|value3
+						$parts	= preg_split('/(?<!\\\)\|/', $newline);
+						$array	= (strcmp($parts[0], $newline) === 0) ? false : true;
+						$parts	= str_replace('\|', '|', $parts);
+
+						foreach ($parts as $key => $value)
+						{
+							if ($value == 'false') {
+								$value = false;
+							}
+							else if ($value == 'true') {
+								$value = true;
+							}
+							else if ($value && $value{0} == '"')
+							{
+								$valueLen = strlen( $value );
+								if ($value{$valueLen-1} == '"') {
+									$value = stripcslashes(substr($value, 1, $valueLen - 2));
+								}
+							}
+							if(!isset($values[$newlinekey])) $values[$newlinekey] = array();
+							$values[$newlinekey][] = str_replace('\n', "\n", $value);
+						}
+
+						if (!$array) {
+							$values[$newlinekey] = $values[$newlinekey][0];
+						}
+					}
+
+					$obj->lines[$property] = $values[$newlinekey];
+				}
+				else
+				{
+					//unescape the \|
+					$value = str_replace('\|', '|', $value);
+
+					if ($value == 'false') {
+						$value = false;
+					}
+					else if ($value == 'true') {
+						$value = true;
+					}
+					else if ($value && $value{0} == '"')
+					{
+						$valueLen = strlen( $value );
+						if ($value{$valueLen-1} == '"') {
+							$value = stripcslashes(substr($value, 1, $valueLen - 2));
+						}
+					}
+
+					$obj->lines[$property] = str_replace('\n', "\n", $value);
+				}
+			}
+			else
+			{
+				$obj->lines['not_a_key_line'.$i++] = $line;
+				continue;
+			}
+		}
+
+		return $obj;
+	}
+	
+	function arrayToIni($data)
+	{
+		$res = '';
+		foreach ($data as $key => $line)
+		{
+			if (strpos($key, 'not_a_key_lin') === 0) {
+				// Escape any pipe characters before storing
+				$line = trim($line);
+				$line	= str_replace('|', '\|', $line);
+				$line	= str_replace(array("\r\n", "\n"), '\\n', $line);
+				if ($line && !($line{0} == ';')) { // ini comments should start with a semi-colon
+					$line = ';'.$line;
+				}
+				$res .= $line."\n";
+			}
+			else {				
+				$line	= str_replace('|', '\|', $line);
+				$line	= str_replace(array("\r\n", "\n"), '\\n', $line);
+				$res .= $key."=".$line."\n";
+			}
+		}
+		return $res;
+	}
 }
 ?>

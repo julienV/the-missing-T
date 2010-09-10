@@ -105,7 +105,7 @@ JHTML::_('behavior.tooltip');
 	<?php $trans = (isset($this->data->to[$key]) ? $this->data->to[$key] : '' ); ?>
 	<tr>
 		<td width="5px"><?php echo $k++; ?></td>
-		<td class="key" width="10%"><?php echo $key; ?></td>
+		<td class="key" width="10%"><?php echo (strpos($key, 'not_a_key_line') === 0 ? JText::_('COM_MISSINGT_COMMENT'): $key); ?></td>
 		<td width="45%" class="src"><?php echo $value; ?></td>
 		<td class="buttons">
 			<?php if (empty($trans)): ?>
