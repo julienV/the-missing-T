@@ -25,9 +25,7 @@ jimport( 'joomla.application.component.view');
 class MissingtViewAbout extends JView {
 
 	function display($tpl = null)
-	{		
-		global $option;
-		
+	{				
 		$app = &JFactory::getApplication();
         
     //initialise variables

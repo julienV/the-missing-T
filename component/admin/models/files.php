@@ -71,19 +71,18 @@ class MissingtModelFiles extends JModel
 		
 		$app = &JFactory::getApplication();
 
-		global $option;
-
-    $limit      = $app->getUserStateFromRequest( $option.'.files.limit', 'limit', $app->getCfg('list_limit'), 'int');
-    $limitstart = $app->getUserStateFromRequest( $option.'.files.limitstart', 'limitstart', 0, 'int' );
-    $search     = $app->getUserStateFromRequest( $option.'.files.search', 'search', '', 'string');
-    $from       = $app->getUserStateFromRequest( $option.'.files.from', 'from', 'en-GB', 'string' );
-    $to         = $app->getUserStateFromRequest( $option.'.files.to', 'to', '', 'string');
-    $type       = $app->getUserStateFromRequest( $option.'.files.location', 'location', 'frontend', 'string');
+    $limit      = $app->getUserStateFromRequest( $this->context.'.files.limit', 'limit', $app->getCfg('list_limit'), 'int');
+    $limitstart = $app->getUserStateFromRequest( $this->context.'.files.limitstart', 'limitstart', 0, 'int' );
+    $search     = $app->getUserStateFromRequest( $this->context.'.files.search', 'search', '', 'string');
+    $from       = $app->getUserStateFromRequest( $this->context.'.files.from', 'from', 'en-GB', 'string' );
+    $to         = $app->getUserStateFromRequest( $this->context.'.files.to', 'to', '', 'string');
+    $type       = $app->getUserStateFromRequest( $this->context.'.files.location', 'location', 'frontend', 'string');
     
-    $app->setUserState($option.'.files.search', $search);
-    $app->setUserState($option.'.files.from', $from);
+    $app->setUserState($this->context.'.files.search', $search);
+		exit('test m,');
+    $app->setUserState($this->context.'.files.from', $from);
     $this->setTo($to);
-    $app->setUserState($option.'.files.type', $type);
+    $app->setUserState($this->context.'.files.type', $type);
 		
 		$this->setState('limit', $limit);
 		$this->setState('limitstart', $limitstart);
@@ -99,7 +98,6 @@ class MissingtModelFiles extends JModel
 	 */
 	function setTo($to)
 	{
-		global $option;
 		$app = &JFactory::getApplication();
 
 		if (!$to) 
@@ -129,7 +127,7 @@ class MissingtModelFiles extends JModel
 				$to = 'en-GB';
 			}
 		}
-		$app->setUserState($option.'.files.to', $to);
+		$app->setUserState($this->context.'.files.to', $to);
 	}
 
 		/**
@@ -155,7 +153,6 @@ class MissingtModelFiles extends JModel
 	{
 		if (empty($this->_data))
 		{
-			global $option;
 			$app = &JFactory::getApplication();
 		
 			$files = $this->_getFiles();
@@ -168,7 +165,7 @@ class MissingtModelFiles extends JModel
 			{
 				$obj = new stdclass();
 				$obj->file = $file;
-				$this->_auditFile($obj, $app->getUserState($option.'.files.from'), $app->getUserState($option.'.files.to'));
+				$this->_auditFile($obj, $app->getUserState($this->context.'.files.from'), $app->getUserState($this->context.'.files.to'));
 				$data[] = $obj;
 			}
 			$this->_data = $data;
@@ -231,13 +228,12 @@ class MissingtModelFiles extends JModel
 
 	function _getFiles()
 	{	
-		global $option;
 		$app = &JFactory::getApplication();
 		if (empty($this->_files))
 		{
-			$search = $app->getUserState($option.'.files.search');
-			$from   = $app->getUserState($option.'.files.from');
-			$type   = $app->getUserState($option.'.files.location');
+			$search = $app->getUserState($this->context.'.files.search');
+			$from   = $app->getUserState($this->context.'.files.from');
+			$type   = $app->getUserState($this->context.'.files.location');
 			if ($type == 'backend') {
 				$files = JFolder::files(JPATH_SITE.DS.'administrator'.DS.'language'.DS.$from, $search, false, true);
 			}
@@ -252,13 +248,12 @@ class MissingtModelFiles extends JModel
 	
 	function _getTargetFiles()
 	{
-		global $option;
 		$app = &JFactory::getApplication();
 		
-		$search = $app->getUserState($option.'.files.search');
-		$to     = $app->getUserState($option.'.files.to');
-		$from   = $app->getUserState($option.'.files.from');
-		$type   = $app->getUserState($option.'.files.location');
+		$search = $app->getUserState($this->context.'.files.search');
+		$to     = $app->getUserState($this->context.'.files.to');
+		$from   = $app->getUserState($this->context.'.files.from');
+		$type   = $app->getUserState($this->context.'.files.location');
 		
 		if ($to == $from)
 		{

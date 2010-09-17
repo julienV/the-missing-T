@@ -26,12 +26,10 @@ class MissingtViewFile extends JView {
 
 	function display($tpl = null)
 	{		
-		global $option;
-		
 		$app = &JFactory::getApplication();
-		$location = $app->getUserState($option.'.files.location');
-		$to       = $app->getUserState($option.'.files.to');
-		$from     = $app->getUserState($option.'.files.from');
+		$location = $app->getUserState($this->context.'.files.location');
+		$to       = $app->getUserState($this->context.'.files.to');
+		$from     = $app->getUserState($this->context.'.files.from');
         
     //initialise variables
     $document = & JFactory::getDocument();

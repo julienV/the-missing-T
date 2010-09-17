@@ -26,7 +26,7 @@ class MissingtViewFiles extends JView {
 
 	function display($tpl = null)
 	{
-		global $option, $mainframe;
+		$mainframe = &Jfactory::getApplication();
 		
 		//Load pane behavior
 		jimport('joomla.html.pane');
@@ -56,12 +56,12 @@ class MissingtViewFiles extends JView {
     $pagination = & $this->get( 'Pagination' );
     
         
-    $filter_order     = $mainframe->getUserState( $option.'.files.filter_order',    'filter_order',   'name', 'cmd' );
-    $filter_order_Dir = $mainframe->getUserState( $option.'.files.filter_order_Dir',  'filter_order_Dir', '',       'word' );
-    $search           = $mainframe->getUserState( $option.'.files.search', 'search', '', 'string' );
-    $from = $mainframe->getUserState( $option.'.files.from');
-    $to   = $mainframe->getUserState( $option.'.files.to');
-    $type = $mainframe->getUserState( $option.'.files.location');    
+    $filter_order     = $mainframe->getUserState( $this->context.'.files.filter_order',    'filter_order',   'name', 'cmd' );
+    $filter_order_Dir = $mainframe->getUserState( $this->context.'.files.filter_order_Dir',  'filter_order_Dir', '',       'word' );
+    $search           = $mainframe->getUserState( $this->context.'.files.search', 'search', '', 'string' );
+    $from = $mainframe->getUserState( $this->context.'.files.from');
+    $to   = $mainframe->getUserState( $this->context.'.files.to');
+    $type = $mainframe->getUserState( $this->context.'.files.location');    
     
     // lists
     $lists = array();

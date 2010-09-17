@@ -26,8 +26,6 @@ class MissingtViewHistory extends JView {
 
 	function display($tpl = null)
 	{		
-		global $option;
-		
 		$app = &JFactory::getApplication();
         
     //initialise variables
@@ -38,8 +36,8 @@ class MissingtViewHistory extends JView {
 		//add css and submenu to document
 		$document->addStyleSheet('components/com_missingt/assets/css/missingt.css');
 		
-    $filter_order     = $app->getUserState( $option.'.files.filter_order',    'filter_order',   'date', 'cmd' );
-    $filter_order_Dir = $app->getUserState( $option.'.files.filter_order_Dir',  'filter_order_Dir', 'DESC',       'word' );
+    $filter_order     = $app->getUserState( $this->context.'.files.filter_order',    'filter_order',   'date', 'cmd' );
+    $filter_order_Dir = $app->getUserState( $this->context.'.files.filter_order_Dir',  'filter_order_Dir', 'DESC',       'word' );
 
     //get vars
     $cid      = JRequest::getVar( 'cid', array(0), 'request', 'array' );
@@ -86,8 +84,6 @@ class MissingtViewHistory extends JView {
 	
 	function changes($tpl = null)
 	{		
-		global $option;
-		
 		$app = &JFactory::getApplication();
         
     //initialise variables
@@ -98,8 +94,8 @@ class MissingtViewHistory extends JView {
 		//add css and submenu to document
 		$document->addStyleSheet('components/com_missingt/assets/css/missingt.css');
 		
-    $filter_order     = $app->getUserState( $option.'.files.filter_order',    'filter_order',   'date', 'cmd' );
-    $filter_order_Dir = $app->getUserState( $option.'.files.filter_order_Dir',  'filter_order_Dir', 'DESC',       'word' );
+    $filter_order     = $app->getUserState( $this->context.'.files.filter_order',    'filter_order',   'date', 'cmd' );
+    $filter_order_Dir = $app->getUserState( $this->context.'.files.filter_order_Dir',  'filter_order_Dir', 'DESC',       'word' );
     
     $model    = & $this->getModel();
     $data     = & $this->get( 'Changes');

@@ -15,7 +15,7 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-jimport('joomla.application.component.model');
+jimport('joomla.application.component.modellist');
 
 /**
  * Joomla Missingt Component file Model
@@ -24,7 +24,7 @@ jimport('joomla.application.component.model');
  * @package   Missingt
  * @since 0.1
  */
-class MissingtModelComponents extends JModel
+class MissingtModelComponents extends JModelList
 {
 	/**
 	 * data array
@@ -51,10 +51,10 @@ class MissingtModelComponents extends JModel
   {
     parent::__construct();
 
-		global $mainframe, $option;
+		$mainframe = &JFactory::getApplication();
 
-    $limit      = $mainframe->getUserStateFromRequest( $option.'.components.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-    $limitstart = $mainframe->getUserStateFromRequest( $option.'.components.limitstart', 'limitstart', 0, 'int' );
+    $limit      = $mainframe->getUserStateFromRequest( $this->context.'.components.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+    $limitstart = $mainframe->getUserStateFromRequest( $this->context.'.components.limitstart', 'limitstart', 0, 'int' );
     		
 		$this->setState('limit', $limit);
 		$this->setState('limitstart', $limitstart);

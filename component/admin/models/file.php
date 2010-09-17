@@ -175,11 +175,9 @@ class MissingtModelFile extends JModel
    * @return string path
    */
   function getSource()
-  {
-  	global $option;
-  	
+  {  	
 		$app = &JFactory::getApplication();
-		$location   = $app->getUserState($option.'.files.location');
+		$location   = $app->getUserState($this->context.'.files.location');
 		$filename = basename($this->_id);
 		$pospoint = strpos($filename, '.');
 		$lang     = substr($filename, 0, $pospoint);
@@ -201,10 +199,9 @@ class MissingtModelFile extends JModel
    */
   function getTarget()
   {
-  	global $option;
 		$app = &JFactory::getApplication();
-		$location = $app->getUserState($option.'.files.location');
-		$to       = $app->getUserState($option.'.files.to');
+		$location = $app->getUserState($this->context.'.files.location');
+		$to       = $app->getUserState($this->context.'.files.to');
 		$filename = basename($this->_id);
 		$pospoint = strpos($filename, '.');
 		$target = $to.substr($filename, $pospoint);

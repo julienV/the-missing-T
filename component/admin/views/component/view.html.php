@@ -25,9 +25,7 @@ jimport( 'joomla.application.component.view');
 class MissingtViewComponent extends JView {
 
 	function display($tpl = null)
-	{		
-		global $option;
-		
+	{				
 		$app = &JFactory::getApplication();
         
     //initialise variables
@@ -60,7 +58,7 @@ class MissingtViewComponent extends JView {
     JToolBarHelper::spacer();
     JToolBarHelper::help( 'missingt.main', true );
     
-    $type = $app->getUserStateFromRequest( $option.'.component.location', 'location', 'frontend', 'string');
+    $type = $app->getUserStateFromRequest( $this->context.'.component.location', 'location', 'frontend', 'string');
     
     // lists
     $lists = array();
