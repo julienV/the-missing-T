@@ -60,7 +60,7 @@ JHTML::_('behavior.tooltip');
 	function elcopy(element)
 	{
 		var tr = $(element).getParent().getParent();
-		tr.getElement('.dest').value = tr.getElement('.src').getText();
+		tr.getElement('.dest').value = tr.getElement('.src').innerHTML;
 	}
 
 	function elgtranslate(element)
