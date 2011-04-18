@@ -55,9 +55,12 @@ class MissingtModelComponents extends JModel
 
     $limit      = $mainframe->getUserStateFromRequest( $option.'.components.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
     $limitstart = $mainframe->getUserStateFromRequest( $option.'.components.limitstart', 'limitstart', 0, 'int' );
-    		
+    $search     = $mainframe->getUserStateFromRequest( $option.'.components.search', 'search', '', 'string' );
+		$search     = strtolower($search);
+    
 		$this->setState('limit', $limit);
 		$this->setState('limitstart', $limitstart);
+		$this->setState('search', $search);
   }
 
   function getData()
@@ -76,7 +79,7 @@ class MissingtModelComponents extends JModel
     if (empty($this->_data))
     {
       jimport('joomla.filesysem.folder');
-      $components = JFolder::folders(JPATH_ADMINISTRATOR.DS.'components', 'com_' );
+      $components = JFolder::folders(JPATH_ADMINISTRATOR.DS.'components', 'com_'.$this->getState('search') );
       $this->_data = $components;
     }
   	return $this->_data;

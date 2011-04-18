@@ -41,12 +41,20 @@ class MissingtViewComponents extends JView {
     
 		MissingtAdminHelper::buildMenu();
 		
+		$state = &$this->get('State');
+    $search           = $state->get( 'search', '');
+		
     $items      = & $this->get('Data');
     $total      = & $this->get( 'Total' );
     $pagination = & $this->get( 'Pagination' );
     
+    $lists = array();
+    $lists['search'] = $search;
+    
     $this->assignRef('items', $items);
     $this->assignRef('pagination',  $pagination);
+    $this->assignRef('lists',  $lists);
+    
     parent::display($tpl);
   }
 }
