@@ -8,4 +8,4 @@ CREATE TABLE IF NOT EXISTS `#__missingt_history` (
   `last_modified` datetime NOT NULL,
   `modified_by` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) TYPE=MyISAM CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) ENGINE=MyISAM CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
