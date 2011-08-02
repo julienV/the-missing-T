@@ -221,7 +221,6 @@ class MissingtModelFile extends JModel
   
 	function _convertToIni($array)
 	{	
-		$handlerIni = & JRegistryFormat::getInstance('INI');
 		$object = new StdClass;
 		
 		foreach($array as $k=>$v) 
@@ -232,9 +231,69 @@ class MissingtModelFile extends JModel
 			}
 		}
 		
-		$string = $handlerIni->objectToString($object,null);	
+		$string = $this->objectToString($object,null);	
 		
 		return $string;
+	}
+	
+/**
+	 * Converts an object into an INI formatted string
+	 * 	-	Unfortunately, there is no way to have ini values nested further than two
+	 * 		levels deep.  Therefore we will only go through the first two levels of
+	 * 		the object.
+	 *
+	 * @access public
+	 * @param object $object Data Source Object
+	 * @param array  $param  Parameters used by the formatter
+	 * @return string INI Formatted String
+	 */
+	function objectToString( &$object, $params )
+	{
+		// Initialize variables
+		$retval = '';
+		$prepend = '';
+
+		// First handle groups (or first level key/value pairs)
+		foreach (get_object_vars( $object ) as $key => $level1)
+		{
+			if (is_object($level1))
+			{
+				// This field is an object, so we treat it as a section
+				$retval .= "[".$key."]\n";
+				foreach (get_object_vars($level1) as $key => $level2)
+				{
+					if (!is_object($level2) && !is_array($level2))
+					{
+						// Join lines
+						$level2		= str_replace('|', '\|', $level2);
+						$level2		= str_replace(array("\r\n", "\n"), '\\n', $level2);
+						$retval		.= $key."=\"".$level2."\"\n";
+					}
+				}
+				$retval .= "\n";
+			}
+			elseif (is_array($level1))
+			{
+				foreach ($level1 as $k1 => $v1)
+				{
+					// Escape any pipe characters before storing
+					$level1[$k1]	= str_replace('|', '\|', $v1);
+					$level1[$k1]	= str_replace(array("\r\n", "\n"), '\\n', $v1);
+				}
+
+				// Implode the array to store
+				$prepend	.= $key."=\"".implode('|', $level1)."\"\n";
+			}
+			else
+			{
+				// Join lines
+				$level1		= str_replace('|', '\|', $level1);
+				$level1		= str_replace(array("\r\n", "\n"), '\\n', $level1);
+				$prepend	.= $key."=\"".$level1."\"\n";
+			}
+		}
+
+		return $prepend."\n".$retval;
 	}
 }
 ?>

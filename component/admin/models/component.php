@@ -544,8 +544,8 @@ class MissingtModelComponent extends JModel
 
 	function _convertToIni($src)
 	{
-		$text = "# en-GB.".$this->_id.".ini\n";
-		$text .="# generated: " . gmdate('D, d M Y H:i:s') . " GMT\n\n";
+		$text = "; en-GB.".$this->_id.".ini\n";
+		$text .="; generated: " . gmdate('D, d M Y H:i:s') . " GMT\n\n";
 
 		$key_files = array();
 		foreach ($src as $key => $value)
@@ -561,12 +561,12 @@ class MissingtModelComponent extends JModel
 		foreach ($key_files as $file => $keys)
 		{
 			$text .= "\n";
-			$text .= "# $file\n";
+			$text .= "; $file\n";
 			foreach ($keys as $key => $value)
 			{
 				$val = str_replace('|', '\|', $value->value);
 				$val = str_replace(array("\r\n", "\n"), '\\n', $val);
-				$text .= $key."=".$val."\n";
+				$text .= $key."=\"".$val."\"\n";
 			}
 		}
 		return $text;
