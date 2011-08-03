@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<install type="component" version="1.5.0" method="upgrade">
-  <name>Missing T</name>
+<extension type="component" version="1.7.0" method="upgrade">
+  <name>MissingT</name>
   <author>Julien Vonthron</author>
   <authorEmail>jlv@jlv-solutions.com</authorEmail>
   <authorUrl>http://www.jlv-solutions.com/forum</authorUrl>	
@@ -8,24 +8,33 @@
   <copyright>(C) 2010 Julien Vonthron. All rights reserved.</copyright>
   <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
   <version></version>
-  <description></description>
+  <description>COM_MISSINGT_DESC</description>
   
-  <installfile>install.missingt.php</installfile>
-  <uninstallfile>uninstall.missingt.php</uninstallfile>
-  
+	<!-- Runs on install/uninstall/update -->
+	<scriptfile>installscript.php</scriptfile>
   <!-- Install Database Section -->
-  <install>
-    <sql>
-      <file driver="mysql" charset="utf8">install.mysql.utf8.sql</file>
-      <file driver="mysql">install.mysql.nonutf8.sql</file>
-    </sql>
-  </install>
+ 	<install>
+ 		  <sql>
+           <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+ 		  </sql>
+ 	</install>
+  <!-- Uninstall Database Section -->
+ 	<uninstall>
+		  <sql>
+           <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+		  </sql>
+ 	</uninstall>	
+	<update> <!-- Runs on update; New in 1.6 -->
+		<schemas>
+			<schemapath type="mysql">sql/updates/mysql</schemapath>
+		</schemas>
+	</update>
   
   <!-- ADMINISTRATION -->
   <administration>
 	
   <!-- Administration Menu Section -->
-    <menu img="components/com_missingt/assets/images/missingt_16.png">Missing T</menu>
+    <menu img="components/com_missingt/assets/images/missingt_16.png">MissingT</menu>
       <submenu>
         <!-- Note that all & must be escaped to &amp; for the file to be valid XML and be parsed by the installer -->
     	<!-- 
@@ -40,13 +49,10 @@
     
     <files folder="admin">
       <filename>admin.missingt.php</filename>
+      <filename>access.xml</filename>
       <filename>config.xml</filename>
       <filename>controller.php</filename>
       <filename>index.html</filename>
-      <filename>install.mysql.utf8.sql</filename>
-      <filename>install.mysql.nonutf8.sql</filename>
-      <filename>uninstall.mysql.utf8.sql</filename>
-      <filename>uninstall.mysql.nonutf8.sql</filename>
       <filename>LICENSE.txt</filename>
       <folder>assets</folder>
       <folder>controllers</folder>
@@ -54,6 +60,7 @@
       <folder>help</folder>
       <folder>helpers</folder>
       <folder>models</folder>
+      <folder>sql</folder>
       <folder>tables</folder>
       <folder>views</folder>
     </files>
@@ -61,7 +68,15 @@
     <!-- Admin Main Language File Copy Section -->
     <languages>
       <language tag="en-GB">languages/admin/en-GB.com_missingt.ini</language>
+      <language tag="en-GB">languages/admin/en-GB.com_missingt.sys.ini</language>
     </languages>
 
   </administration>
-</install>
+		<!-- UPDATESERVER DEFINITION -->
+		
+		<updateservers>
+			<!-- Note: No spaces or linebreaks allowed between the server tags -->
+			<server type="extension" priority="1" name="Tracks Update Site">http://www.jlv-solutions.com/updates/missingt-update.xml</server>
+		</updateservers>
+		
+</extension>

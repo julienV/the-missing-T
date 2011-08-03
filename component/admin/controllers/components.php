@@ -109,8 +109,13 @@ class MissingtControllerComponents extends JController
 		$cid = JRequest::getVar( 'cid', array(), 'request', 'array' );
 		$cid = $cid[0];
 		
-		if (JRequest::getVar('location') == 'frontend') {
+		$loc = JRequest::getVar('location');
+		
+		if ($loc == 'front') {
 			$path = 'language'.DS.'en-GB'.DS.'en-GB.'.$cid.'.ini';
+		}
+		else if ($loc == 'sys') {
+			$path = 'administrator'.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$cid.'.sys.ini';
 		}
 		else {
 			$path = 'administrator'.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$cid.'.ini';

@@ -14,52 +14,22 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 ?>
-  <table cellspacing="0" cellpadding="0" border="0" width="100%">
-    <tr>
-      <td valign="top">
-      <table class="adminlist">
-        <tr>
-          <td>
-            <div>
-            <?php
-            $link = 'index.php?option=com_missingt&view=files';
-            $this->quickiconButton( $link, 'query.png', JText::_( 'COM_MISSINGT_VIEW_TRANSLATIONS_TITLE' ) );            
-            ?>
-            </div>
-          </td>
-          <td>
-            <div>
-            <?php
-            $link = 'index.php?option=com_missingt&view=components';
-            $this->quickiconButton( $link, 'query.png', JText::_( 'COM_MISSINGT_VIEW_COMPONENTS_TITLE' ) );            
-            ?>
-            </div>
-          </td>
-        </tr>
-      </table>
-      </td>
-      <td valign="top" width="320px" style="padding: 7px 0 0 5px">
-      <?php
-      $title = JText::_( 'STATS' );
-      echo $this->pane->startPane( 'stat-pane' );
-      
-      echo $this->pane->startPanel( $title, 'stats' );
-      ?>
-      <table class="adminlist">
-        <tr>
-          <td>
-            <?php echo JText::_( 'A_stat' ).': '; ?>
-          </td>
-          <td>
-            <b><?php echo '-'; ?></b>
-          </td>
-        </tr>
-      </table>
-      <?php
-      echo $this->pane->endPanel();
-      
-      echo $this->pane->endPane();
-      ?>
-      </td>
-    </tr>
-    </table>
+<div id="cpanel">
+
+	<div class="icon-wrapper">
+		<div class="icon">
+			<a href="index.php?option=com_missingt&view=files">
+				<?php echo JHtml::_('image', JURI::base().'components/com_missingt/assets/images/icon-48-language.png', NULL, NULL, true); ?>
+				<span><?php echo JText::_( 'COM_MISSINGT_VIEW_TRANSLATIONS_TITLE' ); ?></span></a>
+		</div>
+	</div>
+
+	<div class="icon-wrapper">
+		<div class="icon">
+			<a href="index.php?option=com_missingt&view=components">
+				<?php echo JHtml::_('image', JURI::base().'components/com_missingt/assets/images/icon-48-extension.png', NULL, NULL, true); ?>
+				<span><?php echo JText::_( 'COM_MISSINGT_VIEW_COMPONENTS_TITLE' ); ?></span></a>
+		</div>
+	</div>
+
+</div>

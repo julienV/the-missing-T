@@ -53,11 +53,11 @@ class MissingtViewHistory extends JView {
             
     //create the toolbar
     JToolBarHelper::title( JText::_( 'COM_MISSINGT_TRANSLATE_HISTORY' ), 'missingt' );
-    JToolBarHelper::custom('changes', 'changes', 'changes', JText::_('COM_MISSINGT_HISTORY_FILE_TOOLBAR_CHANGES'), false);
+    JToolBarHelper::custom('changes', 'changes', 'changes', JText::_('COM_MISSINGT_HISTORY_FILE_TOOLBAR_CHANGES'), true);
     if ($writable) {
     	JToolBarHelper::custom('restore', 'restore', 'restore', JText::_('COM_MISSINGT_HISTORY_FILE_TOOLBAR_RESTORE'), false);
     }
-    JToolBarHelper::custom('export', 'upload.png', 'upload.png', JText::_('COM_MISSINGT_HISTORY_FILE_TOOLBAR_EXPORT'), false);
+    JToolBarHelper::custom('export', 'upload.png', 'upload.png', JText::_('COM_MISSINGT_HISTORY_FILE_TOOLBAR_EXPORT'), true);
     JToolBarHelper::spacer();
     JToolBarHelper::deleteList();
     JToolBarHelper::back();
@@ -74,12 +74,12 @@ class MissingtViewHistory extends JView {
     $lists['order'] = $filter_order;
     
     //assign data to template
-    $this->assignRef('rows',        $rows);
-    $this->assignRef('lists',       $lists);
-    $this->assignRef('pagination', $pagination);
-    $this->assignRef('request_url', $uri->toString());
-    $this->assign('writable',   $writable);
-    $this->assign('target',   $target);
+    $this->rows        = $rows;
+    $this->lists       = $lists;
+    $this->pagination  = $pagination;
+    $this->request_url = $uri->toString();
+    $this->writable    = $writable;
+    $this->target      = $target;
     
     parent::display($tpl);
 	}

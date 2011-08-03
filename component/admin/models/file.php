@@ -184,7 +184,10 @@ class MissingtModelFile extends JModel
 		$pospoint = strpos($filename, '.');
 		$lang     = substr($filename, 0, $pospoint);
 		
-		if ($location == 'backend') {
+		if ($location == 'back') {
+			$path = JPATH_SITE.DS.'administrator'.DS.'language'.DS.$lang.DS.$filename;
+		}
+		else if ($location == 'sys') {
 			$path = JPATH_SITE.DS.'administrator'.DS.'language'.DS.$lang.DS.$filename;
 		}
 		else {
@@ -209,7 +212,10 @@ class MissingtModelFile extends JModel
 		$pospoint = strpos($filename, '.');
 		$target = $to.substr($filename, $pospoint);
 		
-		if ($location == 'backend') {
+		if ($location == 'back') {
+			$path = JPATH_SITE.DS.'administrator'.DS.'language'.DS.$to.DS.$target;
+		}
+		else if ($location == 'sys') {
 			$path = JPATH_SITE.DS.'administrator'.DS.'language'.DS.$to.DS.$target;
 		}
 		else {

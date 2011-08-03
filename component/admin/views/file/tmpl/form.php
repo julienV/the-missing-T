@@ -9,72 +9,6 @@ defined('_JEXEC') or die('Restricted access');
 
 JHTML::_('behavior.tooltip');
 ?>
-<script type="text/javascript" src="http://www.google.com/jsapi">
-</script>
-<script type="text/javascript">
-  google.load("language", "1");
-</script>
-<script language="javascript" type="text/javascript">
-
-	window.addEvent('domready', function(){
-		$$('.mtcopy').addEvent('click', function(event){
-			elcopy(event.target);
-		});
-
-		$$('.mtgtranslate').addEvent('click', function(event){
-			elgtranslate(event.target);
-		});
-	});
-	
-
-	function submitbutton(task)
-	{
-		var form = document.adminForm;
-
-		if (task == 'copyall') {
-			if (confirm("<?php echo JText::_('COM_MISSINGT_CONFIRM_COPYALL'); ?>")) {
-				$$('.mtcopy').each(function(element){
-					elcopy(element);
-				});
-			}
-			return;
-		}
-		if (task == 'googleall') {
-			if (confirm("<?php echo JText::_('COM_MISSINGT_CONFIRM_GOOGLEALL'); ?>")) {
-				$$('.mtcopy').each(function(element){
-					elgtranslate(element);
-				});
-			}
-			return;
-		}
-		if (task == 'cancel') {
-			submitform( task );
-		} else if (task == 'export'){
-			document.adminForm.format.value = 'raw';
-			submitform( task );
-		} else {
-			submitform( task );
-		}
-	}
-
-	function elcopy(element)
-	{
-		var tr = $(element).getParent().getParent();
-		tr.getElement('.dest').value = tr.getElement('.src').innerHTML;
-	}
-
-	function elgtranslate(element)
-	{
-		var tr = $(element).getParent().getParent();
-		var content = tr.getElement('.src').innerHTML;
-		google.language.translate(content, "<?php $ln = (explode('-',$this->from)); echo $ln[0]; ?>", "<?php $ln = (explode('-',$this->to)); echo $ln[0]; ?>", function(result) {
-			  if (!result.error) {
-				  var div = new Element('div').setHTML(result.translation); // trick to convert back html entities
-				  tr.getElement('.dest').value = div.innerHTML;
-			  }
-			});
-	}
-</script>
 
 <form action="index.php" method="post" name="adminForm" id="adminForm">
 
@@ -124,8 +58,8 @@ JHTML::_('behavior.tooltip');
 	<input type="hidden" name="option" value="com_missingt" />
 	<input type="hidden" name="controller" value="files" />
 	<input type="hidden" name="cid[]" value="<?php echo $this->file; ?>" />
-	<input type="hidden" name="from" value="<?php echo $this->from; ?>" />
-	<input type="hidden" name="to" value="<?php echo $this->to; ?>" />
+	<input type="hidden" id="mtfrom" name="from" value="<?php echo $this->from; ?>" />
+	<input type="hidden" id="mtto" name="to" value="<?php echo $this->to; ?>" />
 	<input type="hidden" name="location" value="<?php echo $this->location; ?>" />
 	<input type="hidden" name="format" value="<?php echo 'html'; ?>" />
 	<input type="hidden" name="task" value="" />

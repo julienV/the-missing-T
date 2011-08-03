@@ -37,6 +37,7 @@ class MissingtViewFiles extends JView {
 		$pane   	= & JPane::getInstance('sliders');
 		$user 		= & JFactory::getUser();
     $uri  =& JFactory::getURI();
+    $state = $this->get('state');
 
 		//add css and submenu to document
 		$document->addStyleSheet('components/com_missingt/assets/css/missingt.css');
@@ -57,9 +58,9 @@ class MissingtViewFiles extends JView {
     $pagination = & $this->get( 'Pagination' );
     
         
-    $filter_order     = $mainframe->getUserState( $option.'.files.filter_order',    'filter_order',   'name', 'cmd' );
-    $filter_order_Dir = $mainframe->getUserState( $option.'.files.filter_order_Dir',  'filter_order_Dir', '',       'word' );
-    $search           = $mainframe->getUserState( $option.'.files.search', 'search', '', 'string' );
+    $filter_order     = $state->get('filter_order');
+    $filter_order_Dir = $state->get('filter_order_Dir');
+    $search           = $state->get('search');
     $from = $mainframe->getUserState( $option.'.files.from');
     $to   = $mainframe->getUserState( $option.'.files.to');
     $type = $mainframe->getUserState( $option.'.files.location');    
@@ -76,8 +77,8 @@ class MissingtViewFiles extends JView {
     $lists['to']   = JHTML::_('select.genericlist', $options, 'to', 'class="lg-refresh"', 'value', 'text', $to);
     
     $options = array();
-    $options[] = JHTML::_('select.option', 'frontend', JText::_('COM_MISSINGT_VIEW_FILES_FRONTEND'));
-    $options[] = JHTML::_('select.option', 'backend', JText::_('COM_MISSINGT_VIEW_FILES_BACKEND'));
+    $options[] = JHTML::_('select.option', 'front', JText::_('COM_MISSINGT_VIEW_FILES_FRONTEND'));
+    $options[] = JHTML::_('select.option', 'back', JText::_('COM_MISSINGT_VIEW_FILES_BACKEND'));
     $lists['location']   = JHTML::_('select.genericlist', $options, 'location', 'class="lg-refresh"', 'value', 'text', $type);
     
     // table ordering

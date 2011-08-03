@@ -42,8 +42,10 @@ class MissingtModelComponent extends JModel
 
 	var $_adminFoundWords      = array();
 	var $_frontFoundWords      = array();
+	var $_sysFoundWords      = array();
 	var $_currentLangFront     = array();
 	var $_currentLangAdmin     = array();
+	var $_currentLangSys     = array();
 
 	/**
 	 * Constructor
@@ -58,14 +60,17 @@ class MissingtModelComponent extends JModel
 		$array = JRequest::getVar('cid', '', '', 'array');
 		$this->setId($array[0]);
 
-		$location = $app->getUserStateFromRequest( 'com_missingt.component.location', 'location', 'frontend', 'string');
+		$location = $app->getUserStateFromRequest( 'com_missingt.component.location', 'location', 'front', 'string');
 		$this->setState('location', $location);
 	}
 
 	function getTarget()
 	{
-		if ($this->getState('location') == 'backend') {
+		if ($this->getState('location') == 'back') {
 			$path = JPATH_SITE.DS.'administrator'.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.ini';
+		}
+		else if ($this->getState('location') == 'sys') {
+			$path = JPATH_SITE.DS.'administrator'.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.sys.ini';
 		}
 		else {
 			$path = JPATH_SITE.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.ini';
@@ -118,6 +123,18 @@ class MissingtModelComponent extends JModel
 				$admin[$value->files[0]][$key] = $value;
 			}
 		}
+		
+		$sys = array();
+		foreach ($data->sys as $key => $value)
+		{
+			if (!isset($admin[$value->files[0]])) {
+				$sys[$value->files[0]] = array($key => $value);
+			}
+			else {
+				$sys[$value->files[0]][$key] = $value;
+			}
+		}
+		
 		$front = array();
 		foreach ($data->front as $key => $value)
 		{
@@ -128,8 +145,9 @@ class MissingtModelComponent extends JModel
 				$front[$value->files[0]][$key] = $value;
 			}
 		}
-		$data->admin = $admin;
+		$data->back = $admin;
 		$data->front = $front;
+		$data->sys   = $sys;
 		$this->_data = $data;
 
 		return $data;
@@ -140,21 +158,25 @@ class MissingtModelComponent extends JModel
 		if (empty($this->_data))
 		{
 			$this->_adminLangFile = JPATH_ADMINISTRATOR.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.ini';
+			$this->_sysLangFile = JPATH_ADMINISTRATOR.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.sys.ini';
 			$this->_frontLangFile = JPATH_ROOT.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.ini';
 			$this->_loadLangFile($this->_adminLangFile, 'admin');
+			$this->_loadLangFile($this->_sysLangFile, 'sys');
 			$this->_loadLangFile($this->_frontLangFile, 'front');
 
 			$this->_parsePhpFiles();
 			$this->_parseXmlFiles('admin');
-			$this->_parseXmlViewFiles();
+			$this->_parseXmlFiles('sys');
 			$this->_parseXmlFiles('front');
 
 			$this->_addNotUsed('admin');
+			$this->_addNotUsed('sys');
 			$this->_addNotUsed('front');
 
 
 			$data = new stdclass();
 			$data->admin = $this->_adminFoundWords;
+			$data->sys   = $this->_sysFoundWords;
 			$data->front = $this->_frontFoundWords;
 			$this->_data = $data;
 		}
@@ -174,6 +196,9 @@ class MissingtModelComponent extends JModel
 			$object = $helper->stringToObject(file_get_contents($file));
 			if ($location == 'front') {
 				$this->_currentLangFront = get_object_vars($object);
+			}
+			else if ($location == 'sys') {
+				$this->_currentLangSys = get_object_vars($object);
 			}
 			else {
 				$this->_currentLangAdmin = get_object_vars($object);
@@ -254,142 +279,95 @@ class MissingtModelComponent extends JModel
 		}
 	}
 
-
-	function _parseXmlFiles($type = 'admin')
+	/**
+	 * look for strings in xml files
+	 * 
+	 * @param string $type admin | sys | front
+	 */
+	function _parseXmlFiles($type)
 	{
-		if ($type == 'admin')
+		switch ($type)
 		{
-			if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id))
-			{
-				$adminFiles =  JFolder::files(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id, '.xml', true, true, array($this->_id.'.xml'));
-				foreach ($adminFiles as $item)
+			case 'admin':
+				if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id))
 				{
-					$this->_parseXmlFile($item, 'admin');
+					$adminFiles =  JFolder::files(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id, '.xml', true, true, array($this->_id.'.xml'));
+					foreach ($adminFiles as $file)
+					{
+						$this->_parseXmlFile($file, $type);	
+					}
 				}
-			}
-		}
-		else
-		{
-			if (file_exists(JPATH_SITE.DS.'components'.DS.$this->_id))
-			{
-				$files =  JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id, '.xml', true, true, array($this->_id.'.xml', 'views')); // do not parse the views folder
-				foreach ($files as $item)
+				break;
+				
+			case 'sys':
+				if (file_exists(JPATH_SITE.DS.'components'.DS.$this->_id.DS.'views')) 
 				{
-					$this->_parseXmlFile($item, 'front');
+					$files = JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id.DS.'views', '.xml$', true, true, array($this->_id.'.xml'));
+					foreach ((array) $files as $file)
+					{
+						$this->_parseXmlFile($file, 'sys');	
+					}
 				}
-			}
+				break;
+				
+			case 'front':
+				if (file_exists(JPATH_SITE.DS.'components'.DS.$this->_id))
+				{
+					$files =  JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id, '.xml', true, true, array($this->_id.'.xml', 'views')); // do not parse the views folder
+					foreach ($files as $item)
+					{
+						$this->_parseXmlFile($item, 'front');
+					}
+				}
+				break;				
 		}
 	}
 
+	/**
+	 * look for title, label, description in xml file
+	 * 
+	 * @param string $file path to file
+	 * @param string $type admin | sys | front
+	 */
 	function _parseXmlFile($file, $type)
 	{
+		$pattern = '/(?:title|label|description)="([^"]+)"|<option[^>]*>([^<]*)<\/option>/iU';	
+		$contents = JFile::read($file);
 		$shortname = strstr($file, $this->_id);
 		$shortname = substr(strstr($shortname,'/'), 1);
-		$xml = new JParameter('', $file);
-		 
-		if (!$xml->getGroups()) {
-			return false;
-		}
-		 
-		$allProperties = $xml->getProperties(false);
-
-		foreach ($xml->getGroups() as $key => $group)
+		if (preg_match_all($pattern, $contents, $matches, PREG_SET_ORDER ))
 		{
-			$this->_xmlParsingAdmin[] = $key;
-			if ($key !== '_default') {
-				$this->_addFoundWord($key, $type, $shortname);
-			}
-			foreach ($allProperties['_xml'][$key]->_children as $param)
+			foreach ($matches as $match)
 			{
-				$this->_addFoundWord($param->attributes('label'), $type, $shortname);
-				$this->_addFoundWord($param->attributes('description'), $type, $shortname);
-				if (count($param->_children)>0)
-				{
-					foreach ($param->_children as $options)
-					{
-						if ($options->name()=='option' && !is_numeric($options->data()))
-						{
-							$this->_addFoundWord($options->data(), $type, $shortname);
-						}
-					}
+				if (count($match) == 3) {
+					$this->_addFoundWord($match[2], $type, $shortname);
+				}
+				else {
+					$this->_addFoundWord($match[1], $type, $shortname);
 				}
 			}
 		}
 		return true;
 	}
 
-
-	function _parseXmlViewFiles()
-	{
-		if (!file_exists(JPATH_SITE.DS.'components'.DS.$this->_id.DS.'views')) {
-			return false;
-		}
-		$files = JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id.DS.'views', '.xml$', true, true, array($this->_id.'.xml'));
-
-		foreach ((array) $files as $file)
-		{
-			$xml =& JFactory::getXMLParser('Simple');
-			$shortname = strstr($file, $this->_id);
-			$shortname = 'FRONTEND '.substr(strstr($shortname,'/'), 1);
-			if ($xml->loadFile($file))
-			{
-				$document =& $xml->document;
-				if ($view = $document->getElementByPath('view')) // metadata file
-				{
-					$this->_addFoundWord($view->attributes('title'), 'admin', $shortname);
-					if ($message = $view->getElementByPath('message')) {
-						$this->_addFoundWord($message->data(), 'admin', $shortname);
-					}
-				}
-				if ($view = $document->getElementByPath('layout')) // layout file
-				{
-					$this->_addFoundWord($view->attributes('title'), 'admin', $shortname);
-					if ($message = $view->getElementByPath('message')) {
-						$this->_addFoundWord($message->data(), 'admin', $shortname);
-					}
-				}
-				if ($state = $document->getElementByPath('state'))
-				{
-					$groups = $state->children();
-					foreach((array) $state->children() AS $element)
-					{
-						switch ($element->name())
-						{
-							case 'name':
-							case 'description':
-								$this->_addFoundWord($element->data(), 'admin', $shortname);
-								break;
-								
-							case 'params':
-							case 'url':
-								if ($element->attributes('group')) {
-									$this->_addFoundWord($element->attributes('group'), 'admin', $shortname);
-								}
-								foreach((array) $element->children() as $param)
-								{
-									if ($param->attributes('label')) {
-										$this->_addFoundWord($param->attributes('label'), 'admin', $shortname);
-									}
-									if ($param->attributes('description')) {
-										$this->_addFoundWord($param->attributes('description'), 'admin', $shortname);
-									}
-									foreach ($param->children() as $option) {
-										$this->_addFoundWord($option->data(), 'admin', $shortname);
-									}
-								}
-								break;
-						}
-					}
-				}
-			}
-		}
-		return true;
-	}
 
 	function _addNotUsed($type)
 	{
-		$from = ($type == 'admin' ? $this->_currentLangAdmin : $this->_currentLangFront);
-		$used = ($type == 'admin' ? $this->_adminFoundWords : $this->_frontFoundWords);
+		switch ($type)
+		{
+			case 'admin':
+				$from = $this->_currentLangAdmin;
+				$used = $this->_adminFoundWords;
+				break;
+			case 'sys':
+				$from = $this->_currentLangSys;
+				$used = $this->_sysFoundWords;
+				break;
+			case 'front':
+				$from = $this->_currentLangFront;
+				$used = $this->_frontFoundWords;
+				break;
+		}
 		$notused = array_diff_key($from, $used);
 		 
 		foreach ($notused as $key => $value) {
@@ -422,6 +400,26 @@ class MissingtModelComponent extends JModel
 				}
 				else {
 					$this->_adminFoundWords[$key]->files[] = array($section);
+				}
+				break;
+				
+			case 'sys':
+				if (!isset($this->_sysFoundWords[$key]))
+				{
+					$found = new stdclass();
+					$found->files   = array($section);
+					if (in_array($key, array_keys($this->_currentLangSys)) && !empty($this->_currentLangSys[$key])) {
+						$found->defined = 1;
+						$found->value = $this->_currentLangSys[$key];
+					}
+					else {
+						$found->defined = 0;
+						$found->value ='';
+					}
+					$this->_sysFoundWords[$key] = $found;
+				}
+				else {
+					$this->_sysFoundWords[$key]->files[] = array($section);
 				}
 				break;
 
@@ -496,7 +494,19 @@ class MissingtModelComponent extends JModel
 	{
 		$post = MissingtAdminHelper::getRealPOST();
 		$data = $this->_getAllKeys();
-		$src = ($this->getState('location') == 'frontend' ? $data->front : $data->admin );
+		
+		switch ($this->getState('location'))
+		{
+			case 'admin':
+				$src = $data->admin;
+				break;
+			case 'sys':
+				$src = $data->sys;
+				break;
+			case 'front':
+				$src = $data->front;
+				break;
+		}
 			
 		foreach($post as $k=>$v)
 		{
@@ -522,7 +532,18 @@ class MissingtModelComponent extends JModel
 	{
 		$post = MissingtAdminHelper::getRealPOST();
 		$data = $this->_getAllKeys();
-		$src = ($this->getState('location') == 'frontend' ? $data->front : $data->admin );
+		switch ($this->getState('location'))
+		{
+			case 'admin':
+				$src = $data->admin;
+				break;
+			case 'sys':
+				$src = $data->sys;
+				break;
+			case 'front':
+				$src = $data->front;
+				break;
+		}
 		
 		$res = array();
 		foreach ($post as $k => $v)

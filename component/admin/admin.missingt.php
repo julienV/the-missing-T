@@ -14,14 +14,11 @@
 // no direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
-/*
- * Make sure the user is authorized to view this page
- */
- /*
-$user = & JFactory::getUser();
-if (!$user->authorize( 'com_tracks', 'manage' )) {
-	$mainframe->redirect( 'index.php', JText::_('ALERTNOTAUTH') );
-}*/
+// Access check.
+if (!JFactory::getUser()->authorise('core.manage', 'com_missingt')) 
+{
+	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
+}
 
 // Require the base controller
 require_once (JPATH_COMPONENT.DS.'controller.php');

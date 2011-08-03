@@ -60,15 +60,19 @@ class MissingtViewComponent extends JView {
     JToolBarHelper::spacer();
     JToolBarHelper::help( 'missingt.main', true );
     
-    $type = $app->getUserStateFromRequest( $option.'.component.location', 'location', 'frontend', 'string');
+    $state = $this->get('State');
+    $type = $state->get('location');
+    
+    $data = $data->$type;
     
     // lists
     $lists = array();
     
     // location
     $options = array();
-    $options[] = JHTML::_('select.option', 'frontend', JText::_('COM_MISSINGT_VIEW_FILES_FRONTEND'));
-    $options[] = JHTML::_('select.option', 'backend', JText::_('COM_MISSINGT_VIEW_FILES_BACKEND'));
+    $options[] = JHTML::_('select.option', 'front', JText::_('COM_MISSINGT_VIEW_FILES_FRONTEND'));
+    $options[] = JHTML::_('select.option', 'back',  JText::_('COM_MISSINGT_VIEW_FILES_BACKEND'));
+    $options[] = JHTML::_('select.option', 'sys',      JText::_('COM_MISSINGT_VIEW_FILES_SYS'));
     $lists['location']   = JHTML::_('select.genericlist', $options, 'location', 'class="lg-refresh"', 'value', 'text', $type);
     
     //assign data to template
@@ -77,7 +81,6 @@ class MissingtViewComponent extends JView {
     $this->assign('component',  $cid);
     $this->assign('writable',   $writable);
     $this->assign('type',       $type);
-//    echo '<pre>';print_r($this); echo '</pre>';exit;
     parent::display($tpl);
 	}
 }

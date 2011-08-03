@@ -21,7 +21,7 @@ JHTML::_('behavior.tooltip');
 		
 	});
 
-	function submitbutton(task)
+	Joomla.submitbutton = function(task)
 	{
 		var form = document.adminForm;
 
@@ -33,7 +33,7 @@ JHTML::_('behavior.tooltip');
 		} else {
 			submitform( task );
 		}
-	}
+	};
 </script>
 
 <form action="index.php" method="post" name="adminForm" id="adminForm" class="component-strings">
@@ -62,7 +62,7 @@ JHTML::_('behavior.tooltip');
 		</tr>
 	</thead>
 	<?php $k = 1;?>
-	<?php foreach (($this->type == 'frontend' ? $this->data->front : $this->data->admin) as $file => $values): ?>
+	<?php foreach ($this->data as $file => $values): ?>
 	<tr class="file-section">
 		<td colspan="3"># <?php echo $file; ?></td>
 	</tr>

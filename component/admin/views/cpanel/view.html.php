@@ -38,7 +38,7 @@ class MissingtViewCpanel extends JView {
 		
 		//build toolbar
 		JToolBarHelper::title( JText::_( 'COM_MISSINGT_VIEW_CPANEL_TITLE' ), 'missingt' );
-    JToolBarHelper::preferences('com_Missingt', '360');
+		JToolBarHelper::preferences('com_missingt');
 		JToolBarHelper::help( 'missingt.main', true );
 
 		//add css and submenu to document

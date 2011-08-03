@@ -23,7 +23,7 @@ jimport('joomla.utilities.date');
 
 	});
 
-	function submitbutton(task)
+	Joomla.submitbutton = function(task)
 	{
 		var form = document.adminForm;
 
@@ -33,7 +33,7 @@ jimport('joomla.utilities.date');
 		} else {
 			submitform( task );
 		}
-	}
+	};
 </script>
 
 <div id="missingtmain">
@@ -48,7 +48,7 @@ jimport('joomla.utilities.date');
         <?php echo JText::_( 'NUM' ); ?>
       </th>
       <th width="20">
-        <input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count( $this->items ); ?>);" />
+        <input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count( $this->rows ); ?>);" />
       </th>
       <th class="title">
         <?php echo JText::_('Date'); ?>

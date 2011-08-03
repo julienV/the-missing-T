@@ -40,6 +40,13 @@ class MissingtViewFile extends JView {
 		//add css and submenu to document
 		$document->addStyleSheet('components/com_missingt/assets/css/missingt.css');
 
+		//js
+		$document->addScript('http://www.google.com/jsapi');
+		JHTML::_('behavior.mootools');
+		$document->addScript('components/com_missingt/assets/js/file.js');
+		JText::script('COM_MISSINGT_CONFIRM_COPYALL');
+		JText::script('COM_MISSINGT_CONFIRM_GOOGLEALL');
+		
     //get vars
     $cid      = JRequest::getVar( 'cid', array(0), 'request', 'array' );
     $cid      = $cid[0];
