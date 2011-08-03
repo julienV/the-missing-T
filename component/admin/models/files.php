@@ -71,7 +71,7 @@ class MissingtModelFiles extends JModel
 		
 		$app = &JFactory::getApplication();
 
-		global $option;
+		$option = JRequest::getCmd('option');
 
     $limit      = $app->getUserStateFromRequest( $option.'.files.limit', 'limit', $app->getCfg('list_limit'), 'int');
     $limitstart = $app->getUserStateFromRequest( $option.'.files.limitstart', 'limitstart', 0, 'int' );
@@ -99,7 +99,7 @@ class MissingtModelFiles extends JModel
 	 */
 	function setTo($to)
 	{
-		global $option;
+		$option = JRequest::getCmd('option');
 		$app = &JFactory::getApplication();
 
 		if (!$to) 
@@ -155,7 +155,7 @@ class MissingtModelFiles extends JModel
 	{
 		if (empty($this->_data))
 		{
-			global $option;
+			$option = JRequest::getCmd('option');
 			$app = &JFactory::getApplication();
 		
 			$files = $this->_getFiles();
@@ -231,7 +231,7 @@ class MissingtModelFiles extends JModel
 
 	function _getFiles()
 	{	
-		global $option;
+		$option = JRequest::getCmd('option');
 		$app = &JFactory::getApplication();
 		if (empty($this->_files))
 		{
@@ -252,7 +252,7 @@ class MissingtModelFiles extends JModel
 	
 	function _getTargetFiles()
 	{
-		global $option;
+		$option = JRequest::getCmd('option');
 		$app = &JFactory::getApplication();
 		
 		$search = $app->getUserState($option.'.files.search');

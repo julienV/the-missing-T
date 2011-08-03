@@ -26,7 +26,8 @@ class MissingtViewFiles extends JView {
 
 	function display($tpl = null)
 	{
-		global $option, $mainframe;
+		$mainframe = &JFactory::getApplication();
+  	$option = JRequest::getCmd('option');
 		
 		//Load pane behavior
 		jimport('joomla.html.pane');

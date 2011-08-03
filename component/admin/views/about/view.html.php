@@ -26,7 +26,7 @@ class MissingtViewAbout extends JView {
 
 	function display($tpl = null)
 	{		
-		global $option;
+		$option = JRequest::getCmd('option');
 		
 		$app = &JFactory::getApplication();
         

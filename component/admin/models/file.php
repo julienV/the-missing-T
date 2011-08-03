@@ -176,7 +176,7 @@ class MissingtModelFile extends JModel
    */
   function getSource()
   {
-  	global $option;
+  	$option = JRequest::getCmd('option');
   	
 		$app = &JFactory::getApplication();
 		$location   = $app->getUserState($option.'.files.location');
@@ -201,7 +201,7 @@ class MissingtModelFile extends JModel
    */
   function getTarget()
   {
-  	global $option;
+  	$option = JRequest::getCmd('option');
 		$app = &JFactory::getApplication();
 		$location = $app->getUserState($option.'.files.location');
 		$to       = $app->getUserState($option.'.files.to');

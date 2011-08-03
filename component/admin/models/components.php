@@ -51,7 +51,8 @@ class MissingtModelComponents extends JModel
   {
     parent::__construct();
 
-		global $mainframe, $option;
+		$mainframe = &JFactory::getApplication();
+  	$option = JRequest::getCmd('option');
 
     $limit      = $mainframe->getUserStateFromRequest( $option.'.components.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
     $limitstart = $mainframe->getUserStateFromRequest( $option.'.components.limitstart', 'limitstart', 0, 'int' );

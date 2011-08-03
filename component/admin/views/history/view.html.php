@@ -26,7 +26,7 @@ class MissingtViewHistory extends JView {
 
 	function display($tpl = null)
 	{		
-		global $option;
+		$option = JRequest::getCmd('option');
 		
 		$app = &JFactory::getApplication();
         
@@ -86,7 +86,7 @@ class MissingtViewHistory extends JView {
 	
 	function changes($tpl = null)
 	{		
-		global $option;
+		$option = JRequest::getCmd('option');
 		
 		$app = &JFactory::getApplication();
         

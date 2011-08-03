@@ -26,7 +26,8 @@ class MissingtViewFile extends JView {
 
 	function display($tpl = null)
 	{		
-    global $mainframe;
+		$mainframe = &JFactory::getApplication();
+  	$option = JRequest::getCmd('option');
     
     if ($this->getLayout() == 'export') {
     	return $this->_displayExport($tpl);

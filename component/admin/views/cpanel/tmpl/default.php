@@ -48,7 +48,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
       <table class="adminlist">
         <tr>
           <td>
-            <?php echo JText::_( 'A stat' ).': '; ?>
+            <?php echo JText::_( 'A_stat' ).': '; ?>
           </td>
           <td>
             <b><?php echo '-'; ?></b>
