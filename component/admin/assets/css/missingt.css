@@ -26,3 +26,7 @@ td.buttons img {
 table#files-translations tr.missing td {
 	background-color:pink;
 }
+
+.lg-refresh {
+	float:none;
+}
