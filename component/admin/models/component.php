@@ -17,6 +17,8 @@ defined('_JEXEC') or die();
 
 jimport('joomla.application.component.model');
 
+require_once (JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'missingtline.class.php');
+
 /**
  * Joomla Missingt Component component Model
  *
@@ -31,30 +33,43 @@ class MissingtModelComponent extends JModel
 	 *
 	 * @var string
 	 */
-	var $_id = null;
+	protected $_id = null;
 
 	/**
 	 * cache data array
 	 *
 	 * @var array
 	 */
-	var $_data = null;
+	protected $_data = null;
 
-	var $_adminFoundWords      = array();
-	var $_siteFoundWords      = array();
-	var $_sysFoundWords      = array();
-	var $_currentLangSite     = array();
-	var $_currentLangAdmin     = array();
-	var $_currentLangSys     = array();
-	
+	/**
+	 * found words
+	 * @var array
+	 */
+	protected $_foundWords      = array();
+	/**
+	 * current data from language file
+	 * @var array
+	 */
+	protected $_currentLang     = array();
+	/**
+	 * excluded keys
+	 * @var array
+	 */
 	protected $_exclude = array();
+	
+	/**
+	 * current location: site | admin | sys
+	 * @var string
+	 */
+	protected $_location = 'admin';
 	
 	/**
 	 * Constructor
 	 *
 	 * @since 0.9
 	 */
-	function __construct()
+	public function __construct()
 	{
 		$app = &JFactory::getApplication();
 		parent::__construct();
@@ -62,21 +77,47 @@ class MissingtModelComponent extends JModel
 		$array = JRequest::getVar('cid', '', '', 'array');
 		$this->setId($array[0]);
 
-		$location = $app->getUserStateFromRequest( 'com_missingt.component.location', 'location', 'site', 'string');
-		$this->setState('location', $location);
+		$location = $app->getUserStateFromRequest( 'com_missingt.component.location', 'location', 'admin', 'string');
+		$this->setLocation($location);
 		
 		$params = JComponentHelper::getParams('com_missingt');
 		$excl = str_replace(' ', '', $params->get('exclude', ''));
 		$excl = trim($excl);
 		$this->_exclude = empty($excl) ? array() : explode(",", $excl);
 	}
-
-	function getTarget()
+	
+	/**
+	 * set location: site | admin | sys
+	 * @param string $loc
+	 */
+	public function setLocation($loc)
 	{
-		if ($this->getState('location') == 'admin') {
+		if (!in_array($loc, array('site', 'admin', 'sys'))) {
+			$loc = 'admin';
+		}
+		$this->setState('location', $loc);
+		$this->_location = $loc;
+	}
+	
+	/**
+	 * get location: site | admin | sys
+	 * @return string $loc
+	 */
+	public function getLocation()
+	{
+		return $this->_location;
+	}
+
+	/**
+	 * return file location
+	 * @return string file path
+	 */
+	public function getTarget()
+	{
+		if ($this->getLocation() == 'admin') {
 			$path = JPATH_SITE.DS.'administrator'.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.ini';
 		}
-		else if ($this->getState('location') == 'sys') {
+		else if ($this->getLocation() == 'sys') {
 			$path = JPATH_SITE.DS.'administrator'.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.sys.ini';
 		}
 		else {
@@ -85,7 +126,11 @@ class MissingtModelComponent extends JModel
 		return $path;
 	}
 
-	function getIsWritable()
+	/**
+	 * check if the target is writable
+	 * @return boolean
+	 */
+	public function getIsWritable()
 	{
 		$file = $this->getTarget();
 		if (file_exists($file)) {
@@ -97,14 +142,13 @@ class MissingtModelComponent extends JModel
 	}
 
 	/**
-	 * Method to set the identifier
+	 * Method to set the component name
 	 *
 	 * @access  public
-	 * @param int event identifier
+	 * @param string component name
 	 */
-	function setId($id)
+	public function setId($id)
 	{
-		// Set venue id and wipe data
 		$this->_id      = $id;
 		$this->_data  = null;
 	}
@@ -118,118 +162,80 @@ class MissingtModelComponent extends JModel
 	 */
 	function getData()
 	{
-		$data = $this->_getAllKeys();
-
-		$admin = array();
-		foreach ($data->admin as $key => $value)
-		{
-			if (!isset($admin[$value->files[0]])) {
-				$admin[$value->files[0]] = array($key => $value);
-			}
-			else {
-				$admin[$value->files[0]][$key] = $value;
-			}
+		if (empty($this->_data)) {
+			$this->_data = $this->_getAllKeys();
 		}
 		
-		$sys = array();
-		foreach ($data->sys as $key => $value)
-		{
-			if (!isset($admin[$value->files[0]])) {
-				$sys[$value->files[0]] = array($key => $value);
-			}
-			else {
-				$sys[$value->files[0]][$key] = $value;
-			}
-		}
-		
-		$site = array();
-		foreach ($data->site as $key => $value)
-		{
-			if (!isset($site[$value->files[0]])) {
-				$site[$value->files[0]] = array($key => $value);
-			}
-			else {
-				$site[$value->files[0]][$key] = $value;
-			}
-		}
-		$data->admin = $admin;
-		$data->site = $site;
-		$data->sys   = $sys;
-		$this->_data = $data;
-
-		return $data;
+		return $this->_data;
 	}
 
 	function _getAllKeys()
 	{
-		if (empty($this->_data))
-		{
-			$this->_adminLangFile = JPATH_ADMINISTRATOR.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.ini';
-			$this->_sysLangFile = JPATH_ADMINISTRATOR.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.sys.ini';
-			$this->_siteLangFile = JPATH_ROOT.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.ini';
-			$this->_loadLangFile($this->_adminLangFile, 'admin');
-			$this->_loadLangFile($this->_sysLangFile, 'sys');
-			$this->_loadLangFile($this->_siteLangFile, 'site');
-
-			$this->_parsePhpFiles();
-			$this->_parseXmlFiles('admin');
-			$this->_parseXmlFiles('sys');
-			$this->_parseXmlFiles('site');
-
-			$this->_addNotUsed('admin');
-			$this->_addNotUsed('sys');
-			$this->_addNotUsed('site');
-
-
-			$data = new stdclass();
-			$data->admin = $this->_adminFoundWords;
-			$data->sys   = $this->_sysFoundWords;
-			$data->site = $this->_siteFoundWords;
-			$this->_data = $data;
-		}
-
+		$this->_loadLangFile();
+		$this->_parsePhpFiles();
+		$this->_parseXmlFiles();
+		
 		return $this->_data;
 		 
 	}
 
-	function _loadLangFile($file, $location)
+	/**
+	 * loads the language file into _currentLang
+	 */
+	protected function _loadLangFile()
 	{
 		jimport('joomla.filesystem.file');
-		$helper = & JRegistryFormat::getInstance('INI');
+		
+		switch ($this->getLocation())
+		{
+			case 'admin':
+				$file = JPATH_ADMINISTRATOR.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.ini';
+				break;
+			case 'sys':
+				$file = JPATH_ADMINISTRATOR.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.sys.ini';
+				break;
+			case 'site':
+				$file = JPATH_SITE.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.ini';
+				break;
+		}
 			
 		if (JFile::exists($file))
 		{
 			MissingtAdminHelper::checkHistory($file);
-			$object = $helper->stringToObject(file_get_contents($file));
-			if ($location == 'site') {
-				$this->_currentLangSite = get_object_vars($object);
-			}
-			else if ($location == 'sys') {
-				$this->_currentLangSys = get_object_vars($object);
-			}
-			else {
-				$this->_currentLangAdmin = get_object_vars($object);
-			}
+			$this->_data = MissingTLine::iniStringToArray(file_get_contents($file));
 		}
 	}
 
 
-	function _parsePhpFiles()
+	protected function _parsePhpFiles()
 	{
 		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.folder');
-
-		if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id)) {
-			$adminFiles = JFolder::files(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id, '.php', true, true);
-		}
-		else {
-			$adminFiles = array();
-		}
-		if (file_exists(JPATH_SITE.DS.'components'.DS.$this->_id)) {
-			$siteFiles = JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id, '.php', true, true);
-		}
-		else {
-			$siteFiles = array();
+		
+		switch ($this->getLocation())
+		{
+			case 'admin':
+				if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id)) {
+					$files = JFolder::files(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id, '.php', true, true);
+				}
+				else {
+					return false;
+				}
+				break;
+				
+			case 'site':
+				if (file_exists(JPATH_SITE.DS.'components'.DS.$this->_id)) {
+					$files = JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id, '.php', true, true);
+				}
+				else {
+					return false;
+				}
+				break;
+				
+			default:
+			case 'sys': // no php files !
+				return false;
+				break;
 		}
 
 		$pattern = "/JText::_\(\s*\'(.*)\'\s*\)"
@@ -241,9 +247,9 @@ class MissingtModelComponent extends JModel
 
 		/** ADMIN files **/
 		$matches = array();
-		if (count($adminFiles))
+		if (count($files))
 		{
-			foreach ($adminFiles as $item)
+			foreach ($files as $item)
 			{
 				$contents = JFile::read($item);
 				$shortname = strstr($item, $this->_id);
@@ -259,33 +265,7 @@ class MissingtModelComponent extends JModel
 						if ($m==''|| $key==0) {
 							continue;
 						}
-						$this->_addFoundWord($m,'admin', $shortname);
-					}
-				}
-			}
-		}
-
-		/** FRONT files **/
-		$matches = array();
-		if (count($siteFiles))
-		{
-			foreach ($siteFiles as $item)
-			{
-				$contents = JFile::read($item);
-				$shortname = strstr($item, $this->_id);
-				$shortname = substr(strstr($shortname,'/'), 1);
-				preg_match_all($pattern, $contents, $matches, PREG_SET_ORDER );
-
-				foreach ($matches as $match)
-				{
-					foreach ($match as $key=> $m)
-					{
-						$m = ltrim($m);
-						$m = rtrim($m);
-						if ($m=='' || $key==0) {
-							continue;
-						}
-						$this->_addFoundWord($m,'site', $shortname);
+						$this->_addFoundKey($m, $shortname);
 					}
 				}
 			}
@@ -297,9 +277,9 @@ class MissingtModelComponent extends JModel
 	 * 
 	 * @param string $type admin | sys | site
 	 */
-	function _parseXmlFiles($type)
+	protected function _parseXmlFiles()
 	{
-		switch ($type)
+		switch ($this->getLocation())
 		{
 			case 'admin':
 				if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id))
@@ -307,7 +287,7 @@ class MissingtModelComponent extends JModel
 					$adminFiles =  JFolder::files(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id, '.xml', true, true, array($this->_id.'.xml'));
 					foreach ($adminFiles as $file)
 					{
-						$this->_parseXmlFile($file, $type);	
+						$this->_parseXmlFile($file);	
 					}
 				}
 				break;
@@ -318,7 +298,7 @@ class MissingtModelComponent extends JModel
 					$files = JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id.DS.'views', '.xml$', true, true, array($this->_id.'.xml'));
 					foreach ((array) $files as $file)
 					{
-						$this->_parseXmlFile($file, 'sys');	
+						$this->_parseXmlFile($file);	
 					}
 				}
 				break;
@@ -329,7 +309,7 @@ class MissingtModelComponent extends JModel
 					$files =  JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id, '.xml', true, true, array($this->_id.'.xml', 'views')); // do not parse the views folder
 					foreach ($files as $item)
 					{
-						$this->_parseXmlFile($item, 'site');
+						$this->_parseXmlFile($item);
 					}
 				}
 				break;				
@@ -340,9 +320,8 @@ class MissingtModelComponent extends JModel
 	 * look for title, label, description in xml file
 	 * 
 	 * @param string $file path to file
-	 * @param string $type admin | sys | site
 	 */
-	function _parseXmlFile($file, $type)
+	protected function _parseXmlFile($file)
 	{
 		$pattern = '/(?:title|label|description)="([^"]+)"|<option[^>]*>([^<]*)<\/option>/iU';	
 		$contents = JFile::read($file);
@@ -353,109 +332,44 @@ class MissingtModelComponent extends JModel
 			foreach ($matches as $match)
 			{
 				if (count($match) == 3) {
-					$this->_addFoundWord($match[2], $type, $shortname);
+					$this->_addFoundKey($match[2], $shortname);
 				}
 				else {
-					$this->_addFoundWord($match[1], $type, $shortname);
+					$this->_addFoundKey($match[1], $shortname);
 				}
 			}
 		}
 		return true;
 	}
 
-
-	function _addNotUsed($type)
+	/**
+	 * check if the key is already present, otherwise adds it
+	 * 
+	 * @param string $key
+	 * @param string $section file where it is being used
+	 */
+	protected function _addFoundKey($key, $section)
 	{
-		switch ($type)
-		{
-			case 'admin':
-				$from = $this->_currentLangAdmin;
-				$used = $this->_adminFoundWords;
-				break;
-			case 'sys':
-				$from = $this->_currentLangSys;
-				$used = $this->_sysFoundWords;
-				break;
-			case 'site':
-				$from = $this->_currentLangSite;
-				$used = $this->_siteFoundWords;
-				break;
-		}
-		$notused = array_diff_key($from, $used);
-		 
-		foreach ($notused as $key => $value) {
-			$this->_addFoundWord($key, $type, JText::_('COM_MISSINGT_STRING_NOT_USED'));
-		}
-	}
-
-	function _addFoundWord($string, $type, $section)
-	{
-		if (trim($string)=='' || in_array($string, $this->_exclude)) {
+		$key = strtoupper(trim($key));
+		if (empty($key) || in_array($key, $this->_exclude)) {
 			return;
 		}
-		$key = strtoupper(trim($string));
-		switch($type)
+		
+		// is already in language file ?
+		foreach ($this->_data as $k => $line)
 		{
-			case 'admin':
-				if (!isset($this->_adminFoundWords[$key]))
-				{
-					$found = new stdclass();
-					$found->files   = array($section);
-					if (in_array($key, array_keys($this->_currentLangAdmin)) && !empty($this->_currentLangAdmin[$key])) {
-						$found->defined = 1;
-						$found->value = $this->_currentLangAdmin[$key];
-					}
-					else {
-						$found->defined = 0;
-						$found->value ='';
-					}
-					$this->_adminFoundWords[$key] = $found;
-				}
-				else {
-					$this->_adminFoundWords[$key]->files[] = array($section);
-				}
-				break;
-				
-			case 'sys':
-				if (!isset($this->_sysFoundWords[$key]))
-				{
-					$found = new stdclass();
-					$found->files   = array($section);
-					if (in_array($key, array_keys($this->_currentLangSys)) && !empty($this->_currentLangSys[$key])) {
-						$found->defined = 1;
-						$found->value = $this->_currentLangSys[$key];
-					}
-					else {
-						$found->defined = 0;
-						$found->value ='';
-					}
-					$this->_sysFoundWords[$key] = $found;
-				}
-				else {
-					$this->_sysFoundWords[$key]->files[] = array($section);
-				}
-				break;
-
-			case 'site':
-				if (!isset($this->_siteFoundWords[$key]))
-				{
-					$found = new stdclass();
-					$found->files   = array($section);
-					if (in_array($key, array_keys($this->_currentLangSite))) {
-						$found->defined = true;
-						$found->value = $this->_currentLangSite[$key];
-					}
-					else {
-						$found->defined = false;
-						$found->value ='';
-					}
-					$this->_siteFoundWords[$key] = $found;
-				}
-				else {
-					$this->_siteFoundWords[$key]->files[] = array($section);
-				}
-				break;
+			if ($line->key == $key)
+			{
+				$this->_data[$k]->foundin[] = $section;
+				return true;
+			}
 		}
+		// not found, let's add it !
+		$obj = new MissingTLine();
+		$obj->key = $key;
+		$obj->foundin[] = $section;
+		$this->_data[] = $obj;
+		return true;
 	}
 
 	/**
@@ -505,106 +419,40 @@ class MissingtModelComponent extends JModel
 	 */
 	function getResult()
 	{
-		$post = MissingtAdminHelper::getRealPOST();
+		$keys = JRequest::getVar('line_key', array(), 'post', 'array');
+		$vals = JRequest::getVar('line_val', array(), 'post', 'array', JREQUEST_ALLOWHTML);
 		
-		$data = $this->_getAllKeys();
-		
-		switch ($this->getState('location'))
+		$text = '';
+		foreach($keys as $k => $key)
 		{
-			case 'admin':
-				$src = $data->admin;
-				break;
-			case 'sys':
-				$src = $data->sys;
-				break;
-			case 'site':
-				$src = $data->site;
-				break;
-		}
-			
-		foreach($post as $k=>$v)
-		{
-			if (strpos($k, 'KEY_') === 0)
-			{
-				if (isset($src[substr($k, 4)])) {
-					$src[substr($k, 4)]->value = $v;
-				}
+			if (!empty($key)) {
+				$text .= $keys[$k].'="'.$vals[$k]."\"\n";
+			}
+			else {
+				$text .= $vals[$k]."\n";
 			}
 		}
-
-		$text = $this->_convertToIni($src);
 		return $text;
 	}
 
 
 	/**
-	 * export only previously missing data to ini file
+	 * export only missing data to ini file
 	 * 
 	 * @return string
 	 */
-	function getResultMissing()
+	public function getResultMissing()
 	{
-		$post = MissingtAdminHelper::getRealPOST();
-		$data = $this->_getAllKeys();
-		switch ($this->getState('location'))
-		{
-			case 'admin':
-				$src = $data->admin;
-				break;
-			case 'sys':
-				$src = $data->sys;
-				break;
-			case 'site':
-				$src = $data->site;
-				break;
-		}
+		$keys = JRequest::getVar('line_key', array(), 'post', 'array');
+		$vals = JRequest::getVar('line_val', array(), 'post', 'array', JREQUEST_ALLOWHTML);
 		
-		$res = array();
-		foreach ($post as $k => $v)
+		$text = '';
+		foreach($keys as $k => $key)
 		{
-			if (strpos($k, 'KEY_') === 0)
-			{
-				$key = substr($k, 4);
-				if (isset($src[$key]) && $src[$key]->defined == 0) 
-				{
-					$val = $src[$key];
-					$val->value = $v;
-					$res[$key] = $val;
-				}
-			}
-		}
-		$text = $this->_convertToIni($res);
-		return $text;
-	}
-
-	function _convertToIni($src)
-	{
-		$text = "; en-GB.".$this->_id.".ini\n";
-		$text .="; generated: " . gmdate('D, d M Y H:i:s') . " GMT\n\n";
-
-		$key_files = array();
-		foreach ($src as $key => $value)
-		{
-			if (!isset($key_files[$value->files[0]])) {
-				$key_files[$value->files[0]] = array($key => $value);
-			}
-			else {
-				$key_files[$value->files[0]][$key] = $value;
-			}
-		}
-		 
-		foreach ($key_files as $file => $keys)
-		{
-			$text .= "\n";
-			$text .= "; $file\n";
-			foreach ($keys as $key => $value)
-			{
-				$val = str_replace('|', '\|', $value->value);
-				$val = str_replace(array("\r\n", "\n"), '\\n', $val);
-				$text .= $key."=\"".$val."\"\n";
+			if (!empty($key) && empty($vals[$k])) {
+				$text .= $keys[$k].'="'.$vals[$k]."\"\n";
 			}
 		}
 		return $text;
-	}
+	}	
 }
-?>

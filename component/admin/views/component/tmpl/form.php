@@ -56,23 +56,34 @@ JHTML::_('behavior.tooltip');
 <table class="adminlist">
 	<thead>
 		<tr>
-			<th width="5px">#</th>
-			<th width="10%"><?php echo JText::_('COM_MISSINGT_VIEW_COMPONENT_HEADER_KEY'); ?></th>
-			<th width="45%"><?php echo JText::_('COM_MISSINGT_VIEW_COMPONENT_HEADER_VALUE'); ?></th>
+			<th width="1%">#</th>
+			<th width="30%"><?php echo JText::_('COM_MISSINGT_VIEW_COMPONENT_HEADER_KEY'); ?></th>
+			<th width="50%"><?php echo JText::_('COM_MISSINGT_VIEW_COMPONENT_HEADER_VALUE'); ?></th>
+			<th width="10%"><?php echo JText::_('COM_MISSINGT_VIEW_COMPONENT_HEADER_STATUS'); ?></th>
+			<th width="9%"><?php echo JText::_('COM_MISSINGT_VIEW_COMPONENT_HEADER_BUTTONS'); ?></th>
 		</tr>
 	</thead>
 	<?php $k = 1;?>
-	<?php foreach ($this->data as $file => $values): ?>
-	<tr class="file-section">
-		<td colspan="3"># <?php echo $file; ?></td>
-	</tr>
-		<?php foreach ($values as $key => $value): ?>
-		<tr>
+	<?php foreach ($this->data as $k => $line): ?>
+		<tr id="filerow-<?php echo $k; ?>">
 			<td width="5px"><?php echo $k++; ?></td>
-			<td class="key" width="10%"><?php echo $key; ?></td>
-			<td><textarea name="KEY_<?php echo $key; ?>" cols="40" rows="3" class="dest<?php echo (empty($value->value) ? ' no-trans':'' );?>"><?php echo $value->value; ?></textarea></td>
+			<td class="key" width="10%"><?php echo $line->key ? $line->key : $line->value; ?></td>
+			<td>
+				<?php if ($line->key): ?>
+				<input name="line_key[]" type="hidden" value="<?php echo $line->key; ?>" />
+				<textarea name="line_val[]" cols="40" rows="3" class="dest<?php echo (empty($line->value) ? ' no-trans':'' );?>"><?php echo $line->value; ?></textarea>
+				<?php else: ?>
+				<input name="line_key[]" type="hidden" value="" />
+				<input name="line_val[]" type="hidden" value="<?php echo $this->escape($line->value); ?>" />
+				<?php endif; ?>
+			</td>
+			<td>
+				<?php if ($line->key && !count($line->foundin)): ?>
+				<?php echo JText::_('COM_MISSINGT_FILE_KEY_NOT_FOUND'); ?>
+				<?php endif; ?>
+			</td>
+			<td></td>
 		</tr>
-		<?php endforeach; ?>
 	<?php endforeach; ?>
 </table>
 

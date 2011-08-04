@@ -114,9 +114,12 @@ class MissingtViewHistory extends JView {
     $document->setTitle(JText::_( 'COM_MISSINGT_TRANSLATE_HISTORY_CHANGES' ). ' - '. basename($target));
         
     //assign data to template
-    $this->assignRef('data',        $data);
-    $this->assignRef('request_url', $uri->toString());
-    $this->assign('target',   $target);
+    $this->data        = $data;
+    $this->request_url = $uri->toString();
+    $this->target      = $target;
+    
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'diff.php');
+    $this->helper      = new MissingtHelperdiff();
     
     parent::display($tpl);
 	}

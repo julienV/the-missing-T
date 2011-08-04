@@ -56,8 +56,7 @@ class MissingtViewFiles extends JView {
     $languages_src = & $this->get('Languages');
     $total    = & $this->get( 'Total' );
     $pagination = & $this->get( 'Pagination' );
-    
-        
+            
     $filter_order     = $state->get('filter_order');
     $filter_order_Dir = $state->get('filter_order_Dir');
     $search           = $state->get('search');
@@ -88,13 +87,13 @@ class MissingtViewFiles extends JView {
     // search filter
     $lists['search']= $search;
 
-    $this->assignRef('user',        JFactory::getUser());
-    $this->assignRef('items',       $rows);
-    $this->assignRef('lists',       $lists);
-    $this->assignRef('pagination',  $pagination);
-    $this->assignRef('request_url', $uri->toString());
-    $this->assign('from',           $from);
-    $this->assign('to',             $to);
+    $this->user        = JFactory::getUser();
+    $this->items       = $rows;
+    $this->lists       = $lists;
+    $this->pagination  = $pagination;
+    $this->request_url = $uri->toString();
+    $this->from        = $from;
+    $this->to          = $to;
     
     parent::display($tpl);
 	}

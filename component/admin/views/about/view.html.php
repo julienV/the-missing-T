@@ -37,6 +37,7 @@ class MissingtViewAbout extends JView {
 
 		//add css and submenu to document
 		$document->addStyleSheet('components/com_missingt/assets/css/missingt.css');
+		$document->addStyleSheet('components/com_missingt/assets/css/help.css');
         
     $document->setTitle(JText::_( 'COM_MISSINGT_ABOUT' ));
     JToolBarHelper::title( JText::_( 'COM_MISSINGT_ABOUT' ), 'missingt' );

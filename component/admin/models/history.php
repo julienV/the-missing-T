@@ -180,81 +180,7 @@ class MissingtModelHistory extends JModel
 
 		return $this->_pagination;
 	}
-	
-	/**
-	 * return changes between specified cids, or between
-	 */
-	function getChanges()
-	{
-    $cid = JRequest::getVar('cid', '', '', 'array');
-    JArrayHelper::toInteger($cid);
-    if (!count($cid)) {
-    	return false;
-    }
-
-    $id = $cid[0];
-    
-    $query = ' SELECT h.* ' 
-           . ' FROM #__missingt_history AS h ' 
-           . ' INNER JOIN #__missingt_history AS orig ON orig.file = h.file ' 
-           . ' WHERE h.id <= ' . $id
-           . '   AND orig.id = ' . $id
-           . ' ORDER BY h.id DESC '
-           . ' LIMIT 0,2'
-           ;
-    $this->_db->setQuery($query);
-    $res = $this->_db->loadObjectList();
-    
-    if (!$res) {
-    	return false;
-    }
-    
-    if (!isset($res[1])) {
-    	$before = new stdclass();
-    	$before->text = '';
-    	$before->last_modified = null;
-    }
-    else {
-    	$before = $res[1];
-    }
-    $after  = $res[0];
-    
-    $helper = & JRegistryFormat::getInstance('INI');
-		$object = $helper->stringToObject($before->text);
-		$before->strings = get_object_vars($object);
-		$object = $helper->stringToObject($after->text);
-		$after->strings = get_object_vars($object);
-		
-		$keys = array_merge(array_keys($before->strings), array_keys($after->strings));
-		
-		$changes = array();
-		foreach ($keys as $key)
-		{
-			$change = new stdclass();
-			if (isset($before->strings[$key])) 
-			{
-				if (!isset($after->strings[$key]) || $after->strings[$key] != $before->strings[$key]) 
-				{
-					$change->src  = $before->strings[$key];
-					$change->dest = (isset($after->strings[$key]) ? $after->strings[$key] : '');
-					$changes[$key] = $change;
-				}
-			}
-			else if (isset($after->strings[$key])) 
-			{
-				$change->src  = '';
-				$change->dest = $after->strings[$key];	
-				$changes[$key] = $change;
-			}
-		}
-		
-		$data = new stdclass();
-		$data->strings = $changes;
-		$data->from = $before->last_modified;
-		$data->to   = $after->last_modified;
-		return $data;
-	}
-	
+			
 	/**
 	 * returns stored file text for current version
 	 * 
@@ -330,5 +256,54 @@ class MissingtModelHistory extends JModel
 		
 		return true;
 	}
+	
+
+	/**
+	 * return changes between specified cids, or between
+	 * 
+	 * @return array old, new
+	 */
+	public function getChanges()
+	{
+    $cid = JRequest::getVar('cid', '', '', 'array');
+    JArrayHelper::toInteger($cid);
+    if (!count($cid)) {
+    	return false;
+    }
+
+    $id = $cid[0];
+    
+    $query = ' SELECT h.* ' 
+           . ' FROM #__missingt_history AS h ' 
+           . ' INNER JOIN #__missingt_history AS orig ON orig.file = h.file ' 
+           . ' WHERE h.id <= ' . $id
+           . '   AND orig.id = ' . $id
+           . ' ORDER BY h.id DESC '
+           . ' LIMIT 0,2'
+           ;
+    $this->_db->setQuery($query);
+    $res = $this->_db->loadObjectList();
+    
+    if (!$res) {
+    	return false;
+    }
+    
+    if (!isset($res[1])) {
+    	$before = new stdclass();
+    	$before->text = '';
+    	$before->last_modified = null;
+    }
+    else {
+    	$before = $res[1];
+    }
+    $after  = $res[0];
+    
+		$before->strings = explode("\n", $before->text);
+		$after->strings = explode("\n", $after->text);
+				
+		return array('old' => $before, 'new' => $after);
+	}
+	
+	
 }
 ?>

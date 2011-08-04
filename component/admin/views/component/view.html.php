@@ -62,9 +62,7 @@ class MissingtViewComponent extends JView {
     
     $state = $this->get('State');
     $type = $state->get('location');
-    
-    $data = $data->$type;
-    
+        
     // lists
     $lists = array();
     
@@ -76,11 +74,12 @@ class MissingtViewComponent extends JView {
     $lists['location']   = JHTML::_('select.genericlist', $options, 'location', 'class="lg-refresh"', 'value', 'text', $type);
     
     //assign data to template
-    $this->assignRef('data',    $data);
-    $this->assignRef('lists',   $lists);
-    $this->assign('component',  $cid);
-    $this->assign('writable',   $writable);
-    $this->assign('type',       $type);
+    $this->data      = $data;
+    $this->lists     = $lists;
+    $this->component = $cid;
+    $this->writable  = $writable;
+    $this->type      = $type;
+    
     parent::display($tpl);
 	}
 }
