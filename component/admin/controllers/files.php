@@ -141,7 +141,7 @@ class MissingtControllerFiles extends JController
 		
 		$loc = JRequest::getVar('location');
 		
-		if ($loc == 'front') {
+		if ($loc == 'site') {
 			$path = 'language'.DS.JRequest::getVar('to').DS.str_replace(JRequest::getVar('from'), JRequest::getVar('to'), $cid);
 		}
 		else if ($loc == 'sys') {

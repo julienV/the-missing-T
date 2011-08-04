@@ -70,8 +70,8 @@ class MissingtViewComponent extends JView {
     
     // location
     $options = array();
-    $options[] = JHTML::_('select.option', 'front', JText::_('COM_MISSINGT_VIEW_FILES_FRONTEND'));
-    $options[] = JHTML::_('select.option', 'back',  JText::_('COM_MISSINGT_VIEW_FILES_BACKEND'));
+    $options[] = JHTML::_('select.option', 'site', JText::_('COM_MISSINGT_VIEW_FILES_FRONTEND'));
+    $options[] = JHTML::_('select.option', 'admin',  JText::_('COM_MISSINGT_VIEW_FILES_BACKEND'));
     $options[] = JHTML::_('select.option', 'sys',      JText::_('COM_MISSINGT_VIEW_FILES_SYS'));
     $lists['location']   = JHTML::_('select.genericlist', $options, 'location', 'class="lg-refresh"', 'value', 'text', $type);
     

@@ -111,7 +111,7 @@ class MissingtControllerComponents extends JController
 		
 		$loc = JRequest::getVar('location');
 		
-		if ($loc == 'front') {
+		if ($loc == 'site') {
 			$path = 'language'.DS.'en-GB'.DS.'en-GB.'.$cid.'.ini';
 		}
 		else if ($loc == 'sys') {

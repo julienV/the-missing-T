@@ -77,8 +77,8 @@ class MissingtViewFiles extends JView {
     $lists['to']   = JHTML::_('select.genericlist', $options, 'to', 'class="lg-refresh"', 'value', 'text', $to);
     
     $options = array();
-    $options[] = JHTML::_('select.option', 'front', JText::_('COM_MISSINGT_VIEW_FILES_FRONTEND'));
-    $options[] = JHTML::_('select.option', 'back', JText::_('COM_MISSINGT_VIEW_FILES_BACKEND'));
+    $options[] = JHTML::_('select.option', 'site', JText::_('COM_MISSINGT_VIEW_FILES_FRONTEND'));
+    $options[] = JHTML::_('select.option', 'admin', JText::_('COM_MISSINGT_VIEW_FILES_BACKEND'));
     $lists['location']   = JHTML::_('select.genericlist', $options, 'location', 'class="lg-refresh"', 'value', 'text', $type);
     
     // table ordering

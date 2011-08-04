@@ -78,7 +78,7 @@ class MissingtModelFiles extends JModel
     $search     = $app->getUserStateFromRequest( $option.'.files.search', 'search', '', 'string');
     $from       = $app->getUserStateFromRequest( $option.'.files.from', 'from', 'en-GB', 'string' );
     $to         = $app->getUserStateFromRequest( $option.'.files.to', 'to', '', 'string');
-    $type       = $app->getUserStateFromRequest( $option.'.files.location', 'location', 'front', 'string');
+    $type       = $app->getUserStateFromRequest( $option.'.files.location', 'location', 'site', 'string');
     
     $app->setUserState($option.'.files.search', $search);
     $app->setUserState($option.'.files.from', $from);
@@ -238,7 +238,7 @@ class MissingtModelFiles extends JModel
 			$search = $app->getUserState($option.'.files.search');
 			$from   = $app->getUserState($option.'.files.from');
 			$type   = $app->getUserState($option.'.files.location');
-			if ($type == 'back' || $type == 'sys') {
+			if ($type == 'admin' || $type == 'sys') {
 				$files = JFolder::files(JPATH_SITE.DS.'administrator'.DS.'language'.DS.$from, $search, false, true);
 			}
 			else {
@@ -265,7 +265,7 @@ class MissingtModelFiles extends JModel
 			return $this->getData();
 		}
 	
-		if ($type == 'backend' || $type == 'sys') {
+		if ($type == 'admin' || $type == 'sys') {
 			$files = JFolder::files(JPATH_SITE.DS.'administrator'.DS.'language'.DS.$to, $search, false, false);
 		}
 		else {

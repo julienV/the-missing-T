@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config>  
+<config>
+	<fieldset name="basic" label="COM_MISSINGT_CONFIG_FIELDSET_BASIC" description="COM_MISSINGT_CONFIG_FIELDSET_BASIC_DESC">
+		<field name="exclude"
+		       type="textarea"
+		       label="COM_MISSINGT_CONFIG_EXCLUDED_KEYS"
+		       description="COM_MISSINGT_CONFIG_EXCLUDED_KEYS_DESC"
+		       cols="50"
+		       rows="5"
+		       class="inputbox"
+		       default="JNULL, JYES, JNO, JTRUE, JFALSE, JON, JOFF, JNONE" 
+		/>
+	</fieldset>
+  
 	<fieldset
 		name="permissions"
 		label="JCONFIG_PERMISSIONS_LABEL"

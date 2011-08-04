@@ -41,12 +41,14 @@ class MissingtModelComponent extends JModel
 	var $_data = null;
 
 	var $_adminFoundWords      = array();
-	var $_frontFoundWords      = array();
+	var $_siteFoundWords      = array();
 	var $_sysFoundWords      = array();
-	var $_currentLangFront     = array();
+	var $_currentLangSite     = array();
 	var $_currentLangAdmin     = array();
 	var $_currentLangSys     = array();
-
+	
+	protected $_exclude = array();
+	
 	/**
 	 * Constructor
 	 *
@@ -60,13 +62,18 @@ class MissingtModelComponent extends JModel
 		$array = JRequest::getVar('cid', '', '', 'array');
 		$this->setId($array[0]);
 
-		$location = $app->getUserStateFromRequest( 'com_missingt.component.location', 'location', 'front', 'string');
+		$location = $app->getUserStateFromRequest( 'com_missingt.component.location', 'location', 'site', 'string');
 		$this->setState('location', $location);
+		
+		$params = JComponentHelper::getParams('com_missingt');
+		$excl = str_replace(' ', '', $params->get('exclude', ''));
+		$excl = trim($excl);
+		$this->_exclude = empty($excl) ? array() : explode(",", $excl);
 	}
 
 	function getTarget()
 	{
-		if ($this->getState('location') == 'back') {
+		if ($this->getState('location') == 'admin') {
 			$path = JPATH_SITE.DS.'administrator'.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.ini';
 		}
 		else if ($this->getState('location') == 'sys') {
@@ -135,18 +142,18 @@ class MissingtModelComponent extends JModel
 			}
 		}
 		
-		$front = array();
-		foreach ($data->front as $key => $value)
+		$site = array();
+		foreach ($data->site as $key => $value)
 		{
-			if (!isset($front[$value->files[0]])) {
-				$front[$value->files[0]] = array($key => $value);
+			if (!isset($site[$value->files[0]])) {
+				$site[$value->files[0]] = array($key => $value);
 			}
 			else {
-				$front[$value->files[0]][$key] = $value;
+				$site[$value->files[0]][$key] = $value;
 			}
 		}
-		$data->back = $admin;
-		$data->front = $front;
+		$data->admin = $admin;
+		$data->site = $site;
 		$data->sys   = $sys;
 		$this->_data = $data;
 
@@ -159,25 +166,25 @@ class MissingtModelComponent extends JModel
 		{
 			$this->_adminLangFile = JPATH_ADMINISTRATOR.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.ini';
 			$this->_sysLangFile = JPATH_ADMINISTRATOR.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.sys.ini';
-			$this->_frontLangFile = JPATH_ROOT.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.ini';
+			$this->_siteLangFile = JPATH_ROOT.DS.'language'.DS.'en-GB'.DS.'en-GB.'.$this->_id.'.ini';
 			$this->_loadLangFile($this->_adminLangFile, 'admin');
 			$this->_loadLangFile($this->_sysLangFile, 'sys');
-			$this->_loadLangFile($this->_frontLangFile, 'front');
+			$this->_loadLangFile($this->_siteLangFile, 'site');
 
 			$this->_parsePhpFiles();
 			$this->_parseXmlFiles('admin');
 			$this->_parseXmlFiles('sys');
-			$this->_parseXmlFiles('front');
+			$this->_parseXmlFiles('site');
 
 			$this->_addNotUsed('admin');
 			$this->_addNotUsed('sys');
-			$this->_addNotUsed('front');
+			$this->_addNotUsed('site');
 
 
 			$data = new stdclass();
 			$data->admin = $this->_adminFoundWords;
 			$data->sys   = $this->_sysFoundWords;
-			$data->front = $this->_frontFoundWords;
+			$data->site = $this->_siteFoundWords;
 			$this->_data = $data;
 		}
 
@@ -194,8 +201,8 @@ class MissingtModelComponent extends JModel
 		{
 			MissingtAdminHelper::checkHistory($file);
 			$object = $helper->stringToObject(file_get_contents($file));
-			if ($location == 'front') {
-				$this->_currentLangFront = get_object_vars($object);
+			if ($location == 'site') {
+				$this->_currentLangSite = get_object_vars($object);
 			}
 			else if ($location == 'sys') {
 				$this->_currentLangSys = get_object_vars($object);
@@ -215,8 +222,14 @@ class MissingtModelComponent extends JModel
 		if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id)) {
 			$adminFiles = JFolder::files(JPATH_ADMINISTRATOR.DS.'components'.DS.$this->_id, '.php', true, true);
 		}
+		else {
+			$adminFiles = array();
+		}
 		if (file_exists(JPATH_SITE.DS.'components'.DS.$this->_id)) {
-			$frontFiles = JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id, '.php', true, true);
+			$siteFiles = JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id, '.php', true, true);
+		}
+		else {
+			$siteFiles = array();
 		}
 
 		$pattern = "/JText::_\(\s*\'(.*)\'\s*\)"
@@ -254,9 +267,9 @@ class MissingtModelComponent extends JModel
 
 		/** FRONT files **/
 		$matches = array();
-		if (count($frontFiles))
+		if (count($siteFiles))
 		{
-			foreach ($frontFiles as $item)
+			foreach ($siteFiles as $item)
 			{
 				$contents = JFile::read($item);
 				$shortname = strstr($item, $this->_id);
@@ -272,7 +285,7 @@ class MissingtModelComponent extends JModel
 						if ($m=='' || $key==0) {
 							continue;
 						}
-						$this->_addFoundWord($m,'front', $shortname);
+						$this->_addFoundWord($m,'site', $shortname);
 					}
 				}
 			}
@@ -282,7 +295,7 @@ class MissingtModelComponent extends JModel
 	/**
 	 * look for strings in xml files
 	 * 
-	 * @param string $type admin | sys | front
+	 * @param string $type admin | sys | site
 	 */
 	function _parseXmlFiles($type)
 	{
@@ -310,13 +323,13 @@ class MissingtModelComponent extends JModel
 				}
 				break;
 				
-			case 'front':
+			case 'site':
 				if (file_exists(JPATH_SITE.DS.'components'.DS.$this->_id))
 				{
 					$files =  JFolder::files(JPATH_SITE.DS.'components'.DS.$this->_id, '.xml', true, true, array($this->_id.'.xml', 'views')); // do not parse the views folder
 					foreach ($files as $item)
 					{
-						$this->_parseXmlFile($item, 'front');
+						$this->_parseXmlFile($item, 'site');
 					}
 				}
 				break;				
@@ -327,7 +340,7 @@ class MissingtModelComponent extends JModel
 	 * look for title, label, description in xml file
 	 * 
 	 * @param string $file path to file
-	 * @param string $type admin | sys | front
+	 * @param string $type admin | sys | site
 	 */
 	function _parseXmlFile($file, $type)
 	{
@@ -363,9 +376,9 @@ class MissingtModelComponent extends JModel
 				$from = $this->_currentLangSys;
 				$used = $this->_sysFoundWords;
 				break;
-			case 'front':
-				$from = $this->_currentLangFront;
-				$used = $this->_frontFoundWords;
+			case 'site':
+				$from = $this->_currentLangSite;
+				$used = $this->_siteFoundWords;
 				break;
 		}
 		$notused = array_diff_key($from, $used);
@@ -377,7 +390,7 @@ class MissingtModelComponent extends JModel
 
 	function _addFoundWord($string, $type, $section)
 	{
-		if (trim($string)=='') {
+		if (trim($string)=='' || in_array($string, $this->_exclude)) {
 			return;
 		}
 		$key = strtoupper(trim($string));
@@ -423,23 +436,23 @@ class MissingtModelComponent extends JModel
 				}
 				break;
 
-			case 'front':
-				if (!isset($this->_frontFoundWords[$key]))
+			case 'site':
+				if (!isset($this->_siteFoundWords[$key]))
 				{
 					$found = new stdclass();
 					$found->files   = array($section);
-					if (in_array($key, array_keys($this->_currentLangFront))) {
+					if (in_array($key, array_keys($this->_currentLangSite))) {
 						$found->defined = true;
-						$found->value = $this->_currentLangFront[$key];
+						$found->value = $this->_currentLangSite[$key];
 					}
 					else {
 						$found->defined = false;
 						$found->value ='';
 					}
-					$this->_frontFoundWords[$key] = $found;
+					$this->_siteFoundWords[$key] = $found;
 				}
 				else {
-					$this->_frontFoundWords[$key]->files[] = array($section);
+					$this->_siteFoundWords[$key]->files[] = array($section);
 				}
 				break;
 		}
@@ -493,6 +506,7 @@ class MissingtModelComponent extends JModel
 	function getResult()
 	{
 		$post = MissingtAdminHelper::getRealPOST();
+		
 		$data = $this->_getAllKeys();
 		
 		switch ($this->getState('location'))
@@ -503,8 +517,8 @@ class MissingtModelComponent extends JModel
 			case 'sys':
 				$src = $data->sys;
 				break;
-			case 'front':
-				$src = $data->front;
+			case 'site':
+				$src = $data->site;
 				break;
 		}
 			
@@ -540,8 +554,8 @@ class MissingtModelComponent extends JModel
 			case 'sys':
 				$src = $data->sys;
 				break;
-			case 'front':
-				$src = $data->front;
+			case 'site':
+				$src = $data->site;
 				break;
 		}
 		
