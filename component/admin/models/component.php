@@ -238,12 +238,14 @@ class MissingtModelComponent extends JModel
 				break;
 		}
 
-		$pattern = "/JText::_\(\s*\'(.*)\'\s*\)"
-		. "|JText::_\(\s*\"(.*)\"\s*\)"
-		. "|JText::sprintf\(\s*\"(.*)\""
-		. "|JText::sprintf\(\s*\'(.*)\'"
-		. "|JText::printf\(\s*\'(.*)\'"
-		. "|JText::printf\(\s*\"(.*)\"/iU";
+		$pattern = "/JText::_\(\s*\'([^']*)\'\s*\)"
+		. "|JText::_\(\s*\"([^\"]*)\"\s*\)"
+		. "|JText::sprintf\(\s*\"([^\"]*)\""
+		. "|JText::sprintf\(\s*\'([^'])\'"
+		. "|JText::script\(\s*\"([^\"]*)\""
+		. "|JText::script\(\s*\'([^'])\'"
+		. "|JText::printf\(\s*\'([^'])\'"
+		. "|JText::printf\(\s*\"([^\"]*)\"/iU";
 
 		/** ADMIN files **/
 		$matches = array();

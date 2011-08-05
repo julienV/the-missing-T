@@ -45,4 +45,5 @@ $controller	= new $classname( );
 $controller->execute( JRequest::getCmd('task'));
 $controller->redirect();
 
+// Jtext::script( "tex" );
 ?>
