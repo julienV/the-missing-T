@@ -37,6 +37,12 @@ class MissingtViewComponent extends JView {
 		//add css and submenu to document
 		$document->addStyleSheet('components/com_missingt/assets/css/missingt.css');
 
+		JHTML::_('behavior.mootools');
+		JHTML::_('behavior.tooltip');
+		$document->addScript('components/com_missingt/assets/js/component.js');
+		Jtext::script('COM_MISSINGT_COMPONENT_CLICK_TO_REMOVE');
+		Jtext::script('COM_MISSINGT_COMPONENT_CLICK_TO_RESTORE');
+		
     //get vars
     $cid      = JRequest::getVar( 'cid', array(0), 'request', 'array' );
     $cid      = $cid[0];

@@ -9,33 +9,6 @@ defined('_JEXEC') or die('Restricted access');
 
 JHTML::_('behavior.tooltip');
 ?>
-<script language="javascript" type="text/javascript">
-
-	window.addEvent('domready', function(){
-
-		$$('.lg-refresh').addEvent('change', function(){
-			$('mytask').value = "parse";
-			document.adminForm.format.value = 'html';
-			$('adminForm').submit(); 
-		});		
-		
-	});
-
-	Joomla.submitbutton = function(task)
-	{
-		var form = document.adminForm;
-
-		if (task == 'cancel') {
-			submitform( task );
-		} else if (task == 'export'){
-			document.adminForm.format.value = 'raw';
-			submitform( task );
-		} else {
-			submitform( task );
-		}
-	};
-</script>
-
 <form action="index.php" method="post" name="adminForm" id="adminForm" class="component-strings">
 
 <div class="info">
@@ -53,7 +26,7 @@ JHTML::_('behavior.tooltip');
 <p><?php echo JText::_('COM_MISSINGT_VIEW_FILES_LANGUAGE_SOURCE').': '.$this->lists['location']; ?></p>
 </div>
 
-<table class="adminlist">
+<table class="adminlist" id="tbl-missingt">
 	<thead>
 		<tr>
 			<th width="1%">#</th>
@@ -82,7 +55,7 @@ JHTML::_('behavior.tooltip');
 				<?php echo JText::_('COM_MISSINGT_FILE_KEY_NOT_FOUND'); ?>
 				<?php endif; ?>
 			</td>
-			<td></td>
+			<td><?php echo JHTML::image('administrator/components/com_missingt/assets/images/ok_16.png', 'click to remove', array('class' => "remove-row", 'title' => Jtext::_('COM_MISSINGT_COMPONENT_CLICK_TO_REMOVE'))); ?></td>
 		</tr>
 	<?php endforeach; ?>
 </table>

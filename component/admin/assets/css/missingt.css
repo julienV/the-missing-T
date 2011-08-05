@@ -27,6 +27,11 @@ table#files-translations tr.missing td {
 	background-color:pink;
 }
 
+table#tbl-missingt tr.to-remove td {
+	background-color:#EEE;
+	color: #bbb;
+}
+
 .lg-refresh {
 	float:none;
 }
