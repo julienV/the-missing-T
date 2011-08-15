@@ -52,7 +52,19 @@ JHTML::_('behavior.tooltip');
 			</td>
 			<td>
 				<?php if ($line->key && !count($line->foundin)): ?>
-				<?php echo JText::_('COM_MISSINGT_FILE_KEY_NOT_FOUND'); ?>
+				<?php echo JHTML::image('administrator/components/com_missingt/assets/images/remove.png', JText::_('COM_MISSINGT_FILE_KEY_NOT_FOUND')).JText::_('COM_MISSINGT_FILE_KEY_NOT_FOUND'); ?>
+				<?php elseif (count($line->foundin)) : ?>
+				<?php 
+					$foundin = array();
+					foreach ($line->foundin as $f) {
+						if (!in_array($f, $foundin)) {
+							$foundin[] = $f;
+						}
+					}
+					$imgtitle = JText::sprintf('COM_MISSINGT_FILE_KEY_FOUND_IN', count($foundin)).'::'.implode("<br/>", $foundin);
+					echo JHTML::image('administrator/components/com_missingt/assets/images/ok_16.png', JText::_('COM_MISSINGT_FILE_KEY_FOUND_IN'), array('class' => 'hasTip', 'title' => $imgtitle));
+					echo JText::sprintf('COM_MISSINGT_FILE_KEY_FOUND_IN', count($foundin));
+				?>
 				<?php endif; ?>
 			</td>
 			<td><?php echo JHTML::image('administrator/components/com_missingt/assets/images/ok_16.png', 'click to remove', array('class' => "remove-row", 'title' => Jtext::_('COM_MISSINGT_COMPONENT_CLICK_TO_REMOVE'))); ?></td>
