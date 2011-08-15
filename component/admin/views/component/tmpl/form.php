@@ -9,33 +9,6 @@ defined('_JEXEC') or die('Restricted access');
 
 JHTML::_('behavior.tooltip');
 ?>
-<script language="javascript" type="text/javascript">
-
-	window.addEvent('domready', function(){
-
-		$$('.lg-refresh').addEvent('change', function(){
-			$('mytask').value = "parse";
-			document.adminForm.format.value = 'html';
-			$('adminForm').submit(); 
-		});		
-		
-	});
-
-	function submitbutton(task)
-	{
-		var form = document.adminForm;
-
-		if (task == 'cancel') {
-			submitform( task );
-		} else if (task == 'export'){
-			document.adminForm.format.value = 'raw';
-			submitform( task );
-		} else {
-			submitform( task );
-		}
-	}
-</script>
-
 <form action="index.php" method="post" name="adminForm" id="adminForm" class="component-strings">
 
 <div class="info">
@@ -53,26 +26,37 @@ JHTML::_('behavior.tooltip');
 <p><?php echo JText::_('COM_MISSINGT_VIEW_FILES_LANGUAGE_SOURCE').': '.$this->lists['location']; ?></p>
 </div>
 
-<table class="adminlist">
+<table class="adminlist" id="tbl-missingt">
 	<thead>
 		<tr>
-			<th width="5px">#</th>
-			<th width="10%"><?php echo JText::_('COM_MISSINGT_VIEW_COMPONENT_HEADER_KEY'); ?></th>
-			<th width="45%"><?php echo JText::_('COM_MISSINGT_VIEW_COMPONENT_HEADER_VALUE'); ?></th>
+			<th width="1%">#</th>
+			<th width="30%"><?php echo JText::_('COM_MISSINGT_VIEW_COMPONENT_HEADER_KEY'); ?></th>
+			<th width="50%"><?php echo JText::_('COM_MISSINGT_VIEW_COMPONENT_HEADER_VALUE'); ?></th>
+			<th width="10%"><?php echo JText::_('COM_MISSINGT_VIEW_COMPONENT_HEADER_STATUS'); ?></th>
+			<th width="9%"><?php echo JText::_('COM_MISSINGT_VIEW_COMPONENT_HEADER_BUTTONS'); ?></th>
 		</tr>
 	</thead>
 	<?php $k = 1;?>
-	<?php foreach (($this->type == 'frontend' ? $this->data->front : $this->data->admin) as $file => $values): ?>
-	<tr class="file-section">
-		<td colspan="3"># <?php echo $file; ?></td>
-	</tr>
-		<?php foreach ($values as $key => $value): ?>
-		<tr>
+	<?php foreach ($this->data as $k => $line): ?>
+		<tr id="filerow-<?php echo $k; ?>">
 			<td width="5px"><?php echo $k++; ?></td>
-			<td class="key" width="10%"><?php echo $key; ?></td>
-			<td><textarea name="KEY_<?php echo $key; ?>" cols="40" rows="3" class="dest<?php echo (empty($value->value) ? ' no-trans':'' );?>"><?php echo $value->value; ?></textarea></td>
+			<td class="key" width="10%"><?php echo $line->key ? $line->key : $line->value; ?></td>
+			<td>
+				<?php if ($line->key): ?>
+				<input name="line_key[]" type="hidden" value="<?php echo $line->key; ?>" />
+				<textarea name="line_val[]" cols="40" rows="3" class="dest<?php echo (empty($line->value) ? ' no-trans':'' );?>"><?php echo $line->value; ?></textarea>
+				<?php else: ?>
+				<input name="line_key[]" type="hidden" value="" />
+				<input name="line_val[]" type="hidden" value="<?php echo $this->escape($line->value); ?>" />
+				<?php endif; ?>
+			</td>
+			<td>
+				<?php if ($line->key && !count($line->foundin)): ?>
+				<?php echo JText::_('COM_MISSINGT_FILE_KEY_NOT_FOUND'); ?>
+				<?php endif; ?>
+			</td>
+			<td><?php echo JHTML::image('administrator/components/com_missingt/assets/images/ok_16.png', 'click to remove', array('class' => "remove-row", 'title' => Jtext::_('COM_MISSINGT_COMPONENT_CLICK_TO_REMOVE'))); ?></td>
 		</tr>
-		<?php endforeach; ?>
 	<?php endforeach; ?>
 </table>
 

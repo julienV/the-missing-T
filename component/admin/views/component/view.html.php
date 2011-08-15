@@ -36,12 +36,21 @@ class MissingtViewComponent extends JView {
 
 		//add css and submenu to document
 		$document->addStyleSheet('components/com_missingt/assets/css/missingt.css');
-
+		
+		JHTML::_('behavior.mootools');
+		JHTML::_('behavior.tooltip');
+		$document->addScript('components/com_missingt/assets/js/component.js');
+		$document->addScriptDeclaration("
+			var clicktoremove = '".JText::_('COM_MISSINGT_COMPONENT_CLICK_TO_REMOVE')."';
+			var clicktorestore = '".JText::_('COM_MISSINGT_COMPONENT_CLICK_TO_RESTORE')."';
+		");
+		
     //get vars
     $cid      = JRequest::getVar( 'cid', array(0), 'request', 'array' );
     $cid      = $cid[0];
     
     $model    = & $this->getModel();
+    $state    = & $this->get('state');
     $data     = & $this->get( 'Data');
     $target   = $this->get( 'Target');
     $writable = $this->get( 'IsWritable');
@@ -60,15 +69,15 @@ class MissingtViewComponent extends JView {
     JToolBarHelper::spacer();
     JToolBarHelper::help( 'missingt.main', true );
     
-    $type = $app->getUserStateFromRequest( $option.'.component.location', 'location', 'frontend', 'string');
+    $type = $state->get('location');
     
     // lists
     $lists = array();
     
     // location
     $options = array();
-    $options[] = JHTML::_('select.option', 'frontend', JText::_('COM_MISSINGT_VIEW_FILES_FRONTEND'));
-    $options[] = JHTML::_('select.option', 'backend', JText::_('COM_MISSINGT_VIEW_FILES_BACKEND'));
+    $options[] = JHTML::_('select.option', 'site', JText::_('COM_MISSINGT_VIEW_FILES_FRONTEND'));
+    $options[] = JHTML::_('select.option', 'admin', JText::_('COM_MISSINGT_VIEW_FILES_BACKEND'));
     $lists['location']   = JHTML::_('select.genericlist', $options, 'location', 'class="lg-refresh"', 'value', 'text', $type);
     
     //assign data to template
