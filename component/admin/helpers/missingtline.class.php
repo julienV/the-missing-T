@@ -11,6 +11,7 @@ class MissingTLine {
 	public $value;
 	public $is_section = false;
 	public $added = false;
+	public $isvalid = true;
 	public $foundin = array();
 		 
   /**
@@ -79,9 +80,8 @@ class MissingTLine {
 			list($key, $value) = explode('=', $line, 2);
 
 			// Validate the key.
-			if (preg_match('/[^A-Z0-9_]/i', $key)) {
-				// Maybe throw exception? discard line anyway !
-				continue;
+			if (preg_match('/[^A-Z0-9_]/i', $key)) {// Maybe throw exception? discard line anyway !
+				$obj->isvalid = false;
 			}
 			
 			$length = strlen($value);
