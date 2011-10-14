@@ -232,10 +232,12 @@ class MissingtModelComponent extends JModel
 		$pattern = "/JText::_\(\s*\'([^']*)\'\s*\)"
 		. "|JText::_\(\s*\"([^\"]*)\"\s*\)"
 		. "|JText::sprintf\(\s*\"([^\"]*)\""
-		. "|JText::sprintf\(\s*\'([^'])\'"
+		. "|JText::sprintf\(\s*\'([^']*)\'"
 		. "|JText::script\(\s*\"([^\"]*)\""
-		. "|JText::script\(\s*\'([^'])\'"
-		. "|JText::printf\(\s*\'([^'])\'"
+		. "|JText::script\(\s*\'([^']*)\'"
+		. "|JText::printf\(\s*\'([^']*)\'"
+		. "|JHTML::_\(\s*[\'\"]grid.sort[\'\"]\s*,\s*\'([^']*)\'"
+		. "|JHTML::_\(\s*[\'\"]grid.sort[\'\"]\s*,\s*\'([^']*)\'"
 		. "|JText::printf\(\s*\"([^\"]*)\"/iU";
 
 		/** ADMIN files **/
