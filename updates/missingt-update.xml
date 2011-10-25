@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<updates>
+   <update>
+      <name>MissingT</name>
+      <description>MissingT Component</description>
+      <element>com_missingt</element>
+      <type>component</type>
+      <version>1.0.0rc</version>
+ 
+      <infourl title="MissingT">http://www.jlv-solutions.com/support/12-general</infourl>
+      <downloads>
+         <downloadurl type="full" format="tgz">http://www.jlv-solutions.com/rokdownloads/themissingt/1.7/com_missingt_17_1.0.0rc.tar.gz</downloadurl>
+      </downloads>
+      <tags>
+         <tag>missingt</tag>
+      </tags>
+ 
+      <maintainer>JLV-Solutions</maintainer>
+      <maintainerurl>http://www.jlv-solutions.com</maintainerurl>
+      <section>missingt</section>
+      <targetplatform name="joomla" version="1.7" />
+   </update>
+ 
+</updates>
