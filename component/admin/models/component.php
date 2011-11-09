@@ -229,8 +229,8 @@ class MissingtModelComponent extends JModel
 			default:
 		}
 
-		$pattern = "/JText::_\(\s*\'([^']*)\'\s*\)"
-		. "|JText::_\(\s*\"([^\"]*)\"\s*\)"
+		$pattern = "/JText::_\(\s*\'([^']*)\'"
+		. "|JText::_\(\s*\"([^\"]*)\""
 		. "|JText::sprintf\(\s*\"([^\"]*)\""
 		. "|JText::sprintf\(\s*\'([^']*)\'"
 		. "|JText::script\(\s*\"([^\"]*)\""

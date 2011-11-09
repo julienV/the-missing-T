@@ -100,9 +100,20 @@ JHTML::_('behavior.tooltip');
 			<th width="45%"><?php echo $this->to; ?></th>
 		</tr>
 	</thead>
+	<tbody>
 	<?php $k = 1;?>
 	<?php foreach ($this->data->from as $key => $value): ?>
-	<?php $trans = (isset($this->data->to[$key]) ? $this->data->to[$key] : '' ); ?>
+	<?php 
+	$trans = (isset($this->data->to[$key]) ? $this->data->to[$key] : '' );
+	$areaclass = array('dest');
+	if (empty($trans)) {
+		$areaclass[] = 	'no-trans';
+	}
+	else if ($trans == $value) {
+		$areaclass[] = 	'same';
+	}
+	$areaclass = implode(' ', $areaclass);
+	?>
 	<tr>
 		<td width="5px"><?php echo $k++; ?></td>
 		<td class="key" width="10%"><?php echo $key; ?></td>
@@ -115,9 +126,10 @@ JHTML::_('behavior.tooltip');
 			                    JText::_('COM_MISSINGT_GOOGLE_TRANSLATE'), array('class' => 'mtgtranslate')); ?>
 			<?php endif; ?>
 		</td>
-		<td width="45%"><textarea name="KEY_<?php echo $key; ?>" cols="40" rows="3" class="dest<?php echo (empty($trans) ? ' no-trans':'' );?>"><?php echo $trans; ?></textarea></td>
+		<td width="45%"><textarea name="KEY_<?php echo $key; ?>" cols="40" rows="3" class="<?php echo $areaclass; ?>"><?php echo $trans; ?></textarea></td>
 	</tr>
 	<?php endforeach; ?>
+	</tbody>
 </table>
 
 	<?php echo JHTML::_( 'form.token' ); ?>
