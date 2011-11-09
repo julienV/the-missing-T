@@ -13,6 +13,9 @@
 textarea.no-trans {
 	background-color:pink;
 }
+textarea.same {
+	background-color:yellow;
+}
 
 form.component-strings tr.file-section td {
 	background-color:lightgrey;
