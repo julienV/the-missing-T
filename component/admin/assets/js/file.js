@@ -95,7 +95,7 @@ function elmstranslate(element){
     var languageTo_origin = document.id('mtto').get('value');
     var languageTo = '';
     
-    console.log(document.id('mtto').get('value'));
+    //console.log(document.id('mtto').get('value'));
     
     //corret the lang code for Chinese
     if (languageTo_origin == 'zh-TW') {
